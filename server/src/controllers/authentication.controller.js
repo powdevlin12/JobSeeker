@@ -2,36 +2,37 @@
 const User = require('../models/user.model')
 
 module.exports.create = (req, res, next) => {
-  const { name, phone, email, password, role = "user" } = req.body;
-
+  const { name, phone, email, password, avatar, username,role = "user" } = req.body;
+  console.log(req.body)
   new User(undefined,
-    undefined,
+    avatar,
     name,
     email,
     phone,
+    username,
     password,
     role)
     .create()
     .then(user => {
-      req.session.user = user
+      console.log('thanh cong!')
       res.status(200).json({message: 'Đăng kí thành công !', success : true, data : user})
     })
-    .catch(err => res.status(500).json({message : err.toString(), success : false}))
+    .catch(err => res.status(501).json({message : err.message, success : err.isSuccess}))
 }
 
 module.exports.login = (req, res, next) => {
-  const { email, password } = req.body;
+  const { username, password } = req.body;
   new User(undefined
     , undefined
     , undefined
-    , email
     , undefined
+    , undefined
+    , username
     , password
     , undefined)
     .login()
     .then(user => {
-      req.session.user = user
       res.status(200).json({message: 'Đăng nhập thành công !', success : true, data : user})
     })
-    .catch(err => res.status(500).json({message : err.toString(), success : false}))
+    .catch(err => res.status(500).json({message : err.message, success : err.isSuccess}))
 }

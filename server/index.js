@@ -5,6 +5,14 @@ const path = require("path")
 const dotenv = require('dotenv');
 // env
 dotenv.config();
+let bodyParser = require('body-parser')
+
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }))
+
+// parse application/json
+app.use(bodyParser.json())
+
 // static file 
 app.use(express.static( path.join(__dirname, './public')));
 // view engine
