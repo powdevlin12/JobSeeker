@@ -6,15 +6,17 @@ module.exports = class User {
   #name
   #email
   #phone
+  #username
   #password
   #role
 
-  constructor(id, avatar, name, email, phone, password, role = "staff") {
+  constructor(id, avatar, name, email, phone, username, password, role = "staff") {
     this.id = id
     this.#avatar = avatar
     this.#name = name
     this.#email = email
     this.#phone = phone
+    this.#username = username
     this.#password = password
     this.#role = role
   }
@@ -37,6 +39,7 @@ module.exports = class User {
     user.avatar = this.#avatar
     user.phone = this.#phone
     user.email = this.#email
+    user.username = this.#username
     user.password = this.#password
     user.role = this.#role
     user.save()
@@ -47,7 +50,7 @@ module.exports = class User {
   login = () => new Promise(async (resolve, reject) => {
     new Promise((resolve, reject) => {
       UserSchema
-        .findOne({ email: this.#email })
+        .findOne({ username: this.#username })
         .then(user => { resolve(user) })
         .catch(err => reject(err))
     }).then(async user => {
