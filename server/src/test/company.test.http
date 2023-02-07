@@ -1,0 +1,42 @@
+@urlDev=http://localhost:8000
+
+### get all company
+GET {{urlDev}}/company/list
+### get one company
+GET {{urlDev}}/company/detail?id=63e10717173cbae6b2487520
+
+
+### create company
+POST {{urlDev}}/v1/users
+Content-Type: : application/json
+
+{
+    "name":"Third company",
+    "totalEmployee":100,
+    "type":"good",
+    "about":"me",
+    "phone":"033947586",
+    "location":"hihi",
+    "idUser":"63dfb79ce2b2004977bc1b07"
+}
+### update company
+PUT {{urlDev}}/company/update
+Content-Type: application/json
+
+{
+    "_id":"63e10717173cbae6b2487520",
+    "name":"Third company update",
+    "totalEmployee":100,
+    "type":"good",
+    "about":"me",
+    "phone":"033947586",
+    "location":"hihi",
+    "idUser":"63dfb79ce2b2004977bc1b07"
+}
+### delete company
+DELETE {{urlDev}}/company/delete
+Content-Type: application/json
+
+{
+    "id":"63e10717173cbae6b2487520"
+}

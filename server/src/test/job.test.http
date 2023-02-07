@@ -1,0 +1,50 @@
+@urlDev=http://localhost:8000
+
+### get all job
+GET {{urlDev}}/job/list
+### get all job sort by date
+GET {{urlDev}}/job/list/sort-by-date
+### get one job
+GET {{urlDev}}/job/detail?id=63e10b903cd4b72a98d9380e
+id:63e10b903cd4b72a98d9380e
+
+### create job
+POST {{urlDev}}/job/create
+Content-Type: application/json
+
+{
+    "name":"4: job four",
+    "description":"urgly",
+    "requirement":"bad ts",
+    "hourWorking":"yes",
+    "postingDate":"2023-2-19",
+    "deadline":"2-28-2023",
+    "salary":"1000000",
+    "locationWorking":"",
+    "idOccupation":"63e10b141d3a066c8f791543",
+    "idcompany":"63e10717173cbae6b2487520"
+}
+### update job
+PUT {{urlDev}}/job/update
+Content-Type: application/json
+
+{   
+    "_id":"63e10b903cd4b72a98d9380e",
+    "name":"3: job three",
+    "description":"urgly",
+    "requirement":"bad ts",
+    "hourWorking":"yes",
+    "postingDate":"2-6-2023",
+    "deadline":"2-28-2023",
+    "salary":"1000000",
+    "locationWorking":"",
+    "idOccupation":"63e10b141d3a066c8f791543",
+    "idcompany":"63e10717173cbae6b2487520"
+}
+### delete job
+DELETE {{urlDev}}/job/delete
+Content-Type: application/json
+
+{   
+    "_id":"63e10b903cd4b72a98d9380e"
+}
