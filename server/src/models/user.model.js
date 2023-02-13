@@ -71,4 +71,25 @@ module.exports = class User {
     })
       .catch(err => reject(err))
   })
+  getAll = () => {
+    return new Promise(async (resolve, reject) => {
+      UserSchema.find({})
+        .then((user) => resolve(user))
+        .catch((err) => { reject(err) })
+    })
+  }
+  update = (user) => {
+    return new Promise((resolve, reject) => {
+      UserSchema.findByIdAndUpdate(user._id, user)
+        .then(rel => resolve(user))
+        .catch(err => reject(err))
+    })
+  }
+  updatePassword = (user) => {
+    return new Promise((resolve, reject) => {
+      UserSchema.findByIdAndUpdate(user._id, { password: user.password })
+        .then(rel => resolve(user))
+        .catch(err => reject(err))
+    })
+  }
 }
