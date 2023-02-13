@@ -26,6 +26,7 @@ module.exports.getOne = (req, res, next) => {
     .catch(err => res.status(500).json({ message: err.message, success: err.isSuccess }))
 }
 module.exports.getAll = (req, res, next) => {
+  console.log(req)
   new Company(
     undefined, undefined, undefined, undefined, undefined, undefined, undefined
   )
