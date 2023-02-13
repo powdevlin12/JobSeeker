@@ -1,5 +1,5 @@
 const UserSchema = require('../schemas/user.schema')
-
+var jwt = require('jsonwebtoken');
 module.exports = class User {
   id
   #avatar
@@ -54,11 +54,20 @@ module.exports = class User {
         .then(user => { resolve(user) })
         .catch(err => reject(err))
     }).then(async user => {
-      user
-        ? (user.password === this.#password
-          ? resolve(user)
-          : reject({ message: "Tài khoản hoặc mật khẩu không chính xác", isSuccess: false }))
-        : reject({ message: "Tài khoản không tồn tại", isSuccess: false })
+      if (user) {
+        if (user.password === this.#password) {
+          jwt.sign({_id : user._id, role : user.role},process.env.SECRET_TOKEN_KEY,{
+            expiresIn : process.env.EXPIRESIN
+          }, function(err, token) {
+            err ? console.log(err) : console.log(token)
+          })
+          resolve(user)
+        } else {
+          reject({ message: "Tài khoản hoặc mật khẩu không chính xác", isSuccess: false })
+        }
+      } else {
+        reject({ message: "Tài khoản không tồn tại", isSuccess: false })
+      }
     })
       .catch(err => reject(err))
   })
