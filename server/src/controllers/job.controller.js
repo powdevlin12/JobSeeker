@@ -1,6 +1,7 @@
 
 const Job = require('../models/job.model');
 const jobSchema = require('../schemas/job.schema');
+const jwt = require('jsonwebtoken')
 
 module.exports.create = (req, res, next) => {
   const { name, description, requirement, hourWorking, postingDate, deadline, salary, locationWorking, idOccupation, idcompany } = req.body;
@@ -85,6 +86,41 @@ module.exports.getAllSortByDate = (req, res, next) => {
 }
 
 
+// loc job  NGUOI TIM VIEC
+module.exports.getFilterJob = (req, res, next) => {
+  new Job()
+    .filterJob(req.body)
+    .then((rel) => { return res.status(200).json({ success: true, message: "filter job success", data: rel }) })
+    .catch(err => res.status(404).json({ message: "filter job fail", success: false, error: err }))
+}
+//Tim kiem viec lam
+module.exports.getSearchJob = (req, res, next) => {
+  const condition = req.body
+  //console.log(key)
+  new Job()
+    .findJob(condition)
+    .then((rel) => { return res.status(200).json({ success: true, message: "search job success", data: rel }) })
+    .catch(err => res.status(404).json({ message: "search job fail", success: false, error: err }))
+}
+//xem tat ca cac job da dang doi' voi NHA TUYEN DUNG
+module.exports.getAllJobModerator = (req, res, next) => {
+  const token = req.header('Authorization')
+  if (token) {
+    const accessToken = token.split(" ")[1]
+    try {
+      var decode = jwt.verify(accessToken, process.env.SECRET_TOKEN_KEY)
+      if (decode) {
+        //console.log(decode)
+        new Job()
+          .getAllJobModerator(decode._id)
+          .then((rel) => res.status(200).json({ success: true, message: "get job success", data: rel }))
+          .catch(err => res.status(404).json({ message: "get job fail", success: false, error: err }))
+      }
+    } catch (error) {
+      console.log(error)
+      return res.status(500).json({ message: "Server is error", isSuccess: false })
+    }
+  }
 
-
+}
 

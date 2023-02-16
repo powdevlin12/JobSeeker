@@ -1,4 +1,5 @@
 const jobSchema = require('../schemas/job.schema')
+const companySchema = require('../schemas/company.schema')
 
 module.exports = class Job {
   id
@@ -70,13 +71,6 @@ module.exports = class Job {
         .catch((err) => reject(err))
     })
   }
-  delete = (id) => {
-    return new Promise((resolve, reject) => {
-      jobSchema.findByIdAndDelete(id)
-        .then((rel) => { resolve(rel) })
-        .catch((err) => reject(err))
-    })
-  }
   update = (job) => {
     return new Promise((resolve, reject) => {
       jobSchema.findByIdAndUpdate(job._id, job)
@@ -89,6 +83,73 @@ module.exports = class Job {
       jobSchema.find({ deadline: { $gte: new Date() } }).sort({ postingDate: -1 })
         .then(rel => resolve(rel))
         .catch(err => reject(err))
+    })
+  }
+  //lọc job theo các tiêu chí sắp xếp mới nhất, tìm theo locationWorking, idCompany, idOccupation
+  filterJob = (condition) => {
+    return new Promise((resolve, reject) => {
+      jobSchema.find({ deadline: { $gt: new Date() } }).sort({ postingDate: -1 })
+        .then(
+          rel => {
+            for (let i in condition) {
+              //console.log(i)
+              switch (i) {
+                case 'localWorking':
+                  rel = rel.filter(item => item.locationWorking == condition[i])
+                  break;
+                case 'idCompany':
+                  rel = rel.filter(item => item.idCompany == condition[i])
+                  break;
+                case 'idOccupation':
+                  rel = rel.filter(item => item.idOccupation == condition[i])
+                  break;
+                default:
+                  break;
+              }
+            }
+            return resolve(rel)
+          }
+        )
+        .catch(err => reject(err))
+    })
+  }
+  //xem tất cả job đã đăng(dành cho ng tuyển dụng)
+  getAllJobModerator = (userId) => {
+    console.log(userId)
+    return new Promise(async (resolve, reject) => {
+      var company = await companySchema.findOne({ idUser: userId }).exec()
+      //console.log(company._id.toString())
+      jobSchema.find({ idCompany: company._id.toString() })
+        .then((rel) => {
+          //console.log(rel)
+          return resolve(rel)
+        })
+        .catch((err) => reject(err))
+    })
+  }
+  // vua tim kiem vua nhan theo id
+  findJob = (condition) => {
+    return new Promise((resolve, reject) => {
+      jobSchema.find({ name: { $regex: condition.key.toString() }, deadline: { $gt: new Date() } })
+        .then((rel) => {
+          for (let i in condition) {
+            switch (i) {
+              case 'localWorking':
+                rel = rel.filter(item => item.locationWorking == condition[i])
+                break;
+              case 'idCompany':
+                rel = rel.filter(item => item.idCompany == condition[i])
+                break;
+              case 'idOccupation':
+                rel = rel.filter(item => item.idOccupation == condition[i])
+                break;
+              default:
+                break;
+            }
+          }
+          resolve(rel);
+        })
+        .catch((err) => reject(err))
     })
   }
 }

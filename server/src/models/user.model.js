@@ -56,9 +56,9 @@ module.exports = class User {
     }).then(async user => {
       if (user) {
         if (user.password === this.#password) {
-          jwt.sign({_id : user._id, role : user.role},process.env.SECRET_TOKEN_KEY,{
-            expiresIn : process.env.EXPIRESIN
-          }, function(err, token) {
+          jwt.sign({ _id: user._id, role: user.role }, process.env.SECRET_TOKEN_KEY, {
+            expiresIn: process.env.EXPIRESIN
+          }, function (err, token) {
             err ? console.log(err) : console.log(token)
           })
           resolve(user)
@@ -90,6 +90,11 @@ module.exports = class User {
       UserSchema.findByIdAndUpdate(user._id, { password: user.password })
         .then(rel => resolve(user))
         .catch(err => reject(err))
+    })
+  }
+  delete = (id) => {
+    return new Promise((resolve, reject) => {
+
     })
   }
 }
