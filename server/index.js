@@ -3,8 +3,11 @@ const app = express()
 const port = process.env.PORT || 8000
 const path = require("path")
 const dotenv = require('dotenv');
+const cors = require('cors')
 // env
 dotenv.config();
+app.use(cors());
+app.options('*', cors());
 let bodyParser = require('body-parser')
 
 // parse application/x-www-form-urlencoded
