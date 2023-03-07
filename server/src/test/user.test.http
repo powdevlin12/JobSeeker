@@ -18,9 +18,10 @@ Content-Type: : application/json
     }
 }
 ### update company
-DELETE {{{{urlDev}}}}/company/delete
+DELETE {{urlDev}}/company/delete
+
 Content-Type: application/json
 {
-    
+    "id":"63e0867c70784567a709e8ea"
 }
 ### delete company

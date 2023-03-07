@@ -3,14 +3,14 @@ const applicationSchema = require("../schemas/application.schema")
 module.exports = class ApplicationModel {
     #id
     #idJobSeeker
-    #idCompany
+    #idJob
     #cv
     #submitDate
 
-    constructor(id, idJobSeeker, idCompany, cv, submitDate) {
+    constructor(id, idJobSeeker, idJob, cv, submitDate) {
         this.#id = id
         this.#idJobSeeker = idJobSeeker
-        this.#idCompany = idCompany
+        this.#idJob = idJob
         this.#cv = cv
         this.#submitDate = submitDate
     }
@@ -18,7 +18,7 @@ module.exports = class ApplicationModel {
         return new Promise((resolve, reject) => {
             const app = new applicationSchema()
             app.idJobSeeker = this.#idJobSeeker
-            app.idCompany = this.#idCompany
+            app.idJob = this.#idJob
             app.cv = this.#cv
             app.submitDate = this.#submitDate
             app.save()
@@ -36,9 +36,9 @@ module.exports = class ApplicationModel {
 
         })
     }
-    getAll = (idCompany) => {
+    getAll = (idJob) => {
         return new Promise((resolve, reject) => {
-            applicationSchema.find({ idCompany: idCompany })
+            applicationSchema.find({ idJob: idJob })
                 .then((rel) => resolve(rel))
                 .catch(err => reject(err))
         })
@@ -48,6 +48,21 @@ module.exports = class ApplicationModel {
             applicationSchema.findById(id)
                 .then((rel) => resolve(rel))
                 .catch(err => reject(err))
+        })
+    }
+    getAllByJobId = (jobId, userId) => {
+        return new Promise(async (resolve, reject) => {
+            //check xem user da~ apply chua, neu roi` thi tra ve false
+            const apply = await applicationSchema.find({ idJob: jobId, idJobSeeker: userId }).exec()
+            if (apply) {
+                return reject("You already apply this job")
+            }
+            applicationSchema.find({ idJob: jobId })
+                .then((rel) => {
+                    //console.log(rel)
+                    return resolve(rel)
+                })
+                .catch((err) => reject(err))
         })
     }
 }

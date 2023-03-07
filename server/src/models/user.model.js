@@ -60,6 +60,7 @@ module.exports = class User {
     }).then(async user => {
       if (user) {
         if (user.password === this.#password) {
+
           jwt.sign({ _id : user._id, role : user.role }, process.env.SECRET_TOKEN_KEY, {
             expiresIn: process.env.ACCESS_EXPIRESIN
           }, function (err, token) {
@@ -90,6 +91,34 @@ module.exports = class User {
     })
       .catch(err => reject(err))
   })
+
+  getAll = () => {
+    return new Promise(async (resolve, reject) => {
+      UserSchema.find({})
+        .then((user) => resolve(user))
+        .catch((err) => { reject(err) })
+    })
+  }
+  update = (user) => {
+    return new Promise((resolve, reject) => {
+      UserSchema.findByIdAndUpdate(user._id, user)
+        .then(rel => resolve(user))
+        .catch(err => reject(err))
+    })
+  }
+  updatePassword = (user) => {
+    return new Promise((resolve, reject) => {
+      UserSchema.findByIdAndUpdate(user._id, { password: user.password })
+        .then(rel => resolve(user))
+        .catch(err => reject(err))
+    })
+  }
+  delete = (id) => {
+    return new Promise((resolve, reject) => {
+
+    })
+  }
+
 
   changePassword = (newPassword) => new Promise(async (resolve, reject) => {
     try {
@@ -132,4 +161,5 @@ module.exports = class User {
       reject(err)
     }
   })
+
 }

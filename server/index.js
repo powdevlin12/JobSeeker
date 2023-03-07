@@ -6,6 +6,8 @@ const dotenv = require('dotenv');
 const cors = require('cors')
 // env
 dotenv.config();
+app.use(cors());
+app.options('*', cors());
 let bodyParser = require('body-parser')
 // user cors
 app.use(cors())

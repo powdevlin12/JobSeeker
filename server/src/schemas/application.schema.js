@@ -8,9 +8,9 @@ const applicationSchema = new mongoose.Schema({
     ref: 'User',
     require: true
   },
-  idCompany: {
+  idJob: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Company',
+    ref: 'Job',
     require: true
   },
   cv: {

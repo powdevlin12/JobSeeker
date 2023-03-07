@@ -2,6 +2,8 @@
 
 ### get all company
 GET {{urlDev}}/company/list
+
+Authorization: bearber eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2M2UwODY3YzcwNzg0NTY3YTcwOWU4ZWEiLCJyb2xlIjoidXNlciIsImlhdCI6MTY3NjM1MDE3MiwiZXhwIjoxNjc2MzUwMjMyfQ.OOgD-Dbr-gyoOiwXL_kfk5BsiPh3V3jWDUF_12pf5yc
 ### get one company
 GET {{urlDev}}/company/detail?id=63e10717173cbae6b2487520
 
@@ -19,6 +21,8 @@ Content-Type: : application/json
     "location":"hihi",
     "idUser":"63dfb79ce2b2004977bc1b07"
 }
+
+
 ### update company
 PUT {{urlDev}}/company/update
 Content-Type: application/json
