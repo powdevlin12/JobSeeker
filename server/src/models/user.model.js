@@ -1,7 +1,8 @@
 const UserSchema = require('../schemas/user.schema')
 var jwt = require('jsonwebtoken');
+const { genaralAccessToken, genaralRefreshToken } = require('../utils');
 module.exports = class User {
-  id
+  #id
   #avatar
   #name
   #email
@@ -9,9 +10,9 @@ module.exports = class User {
   #username
   #password
   #role
-
-  constructor(id, avatar, name, email, phone, username, password, role = "staff") {
-    this.id = id
+  #refreshToken
+  constructor(id, avatar, name, email, phone, username, password, role = "staff", refreshToken = null) {
+    this.#id = id
     this.#avatar = avatar
     this.#name = name
     this.#email = email
@@ -19,6 +20,7 @@ module.exports = class User {
     this.#username = username
     this.#password = password
     this.#role = role
+    this.#refreshToken = refreshToken
   }
 
   create = () => new Promise(async (resolve, reject) => {
@@ -42,6 +44,8 @@ module.exports = class User {
     user.username = this.#username
     user.password = this.#password
     user.role = this.#role
+    user.refreshToken = this.#refreshToken
+
     user.save()
       .then(user => resolve(user))
       .catch(err => reject(err))
@@ -51,17 +55,33 @@ module.exports = class User {
     new Promise((resolve, reject) => {
       UserSchema
         .findOne({ username: this.#username })
-        .then(user => { resolve(user) })
+        .then(user => resolve(user))
         .catch(err => reject(err))
     }).then(async user => {
       if (user) {
         if (user.password === this.#password) {
-          jwt.sign({ _id: user._id, role: user.role }, process.env.SECRET_TOKEN_KEY, {
-            expiresIn: process.env.EXPIRESIN
+
+          jwt.sign({ _id : user._id, role : user.role }, process.env.SECRET_TOKEN_KEY, {
+            expiresIn: process.env.ACCESS_EXPIRESIN
           }, function (err, token) {
-            err ? console.log(err) : console.log(token)
+            if (err) {
+              console.log(err)
+            } else {
+              console.log('token '+ token)
+              token ? resolve({...user._doc, accessToken : token}) : reject({message : "Không tạo được token"})
+            }
           })
-          resolve(user)
+          
+          // jwt.sign({ _id, role }, process.env.SECRET_TOKEN_KEY, {
+          //   expiresIn: process.env.REFRESH_EXPIRESIN
+          // }, async(err, token) => {
+          //   if (err) {
+          //     console.log(err)
+          //   } else {
+          //     console.log('refresh token '+ token)
+          //     await UserSchema.updateOne({_id : user._id}, {refreshToken})
+          //   }
+          // })
         } else {
           reject({ message: "Tài khoản hoặc mật khẩu không chính xác", isSuccess: false })
         }
@@ -71,6 +91,7 @@ module.exports = class User {
     })
       .catch(err => reject(err))
   })
+
   getAll = () => {
     return new Promise(async (resolve, reject) => {
       UserSchema.find({})
@@ -97,4 +118,48 @@ module.exports = class User {
 
     })
   }
+
+
+  changePassword = (newPassword) => new Promise(async (resolve, reject) => {
+    try {
+      const user = await UserSchema.findOne({_id : this.#id})
+      if (user) { 
+        this.#password !== user.password ? reject({message : "Mật khẩu không đúng !", isSuccess: false})
+        : UserSchema.updateOne({_id : this.#id}, {
+          password : newPassword
+        }).then(res => resolve({message : "Đổi mật khẩu thành công !", isSuccess : true, res}))
+          .catch(err => {
+            return reject({message : "Lỗi server", err : err})
+          })
+      } else {
+        reject({message : "Không có người này, token bị sai !", isSuccess: false})
+      }
+    } catch (error) {
+      console.log(error)
+      return reject({message : "Lỗi server", err : err})
+    }
+  })
+
+  logOut = (idUser) => new Promise(async (resolve, reject) => {
+    try {
+      const data = await UserSchema.updateOne({_id : idUser},{refreshToken : null})
+      console.log(data) 
+      resolve(data)
+    } catch (error) {
+      console.log(error)
+      reject(error)
+    }
+  })
+
+  getUser = () => new Promise(async(resolve, reject) => {
+    try {
+      const res = await UserSchema.findOne({_id : this.#id})
+      console.log('user : '+ res.data)
+      resolve(res.data)
+    } catch (error) {
+      console.log(err)
+      reject(err)
+    }
+  })
+
 }

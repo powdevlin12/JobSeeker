@@ -9,9 +9,35 @@ dotenv.config();
 app.use(cors());
 app.options('*', cors());
 let bodyParser = require('body-parser')
+// user cors
+app.use(cors())
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
+// swagger
+const swaggerJsdoc = require("swagger-jsdoc")
+const swaggerUi = require("swagger-ui-express")
+
+const options = {
+  definition : {
+    openapi : "3.0.0",
+    info : {
+      title : "Job Seeker",
+      version : "1.0.0",
+      description : "Dat Ngoc Ba Ngan Nghia"
+    },
+    servers : [
+      {
+        url : 'http://localhost:8000'
+      }
+    ],
+  },
+  apis : ["./src/controllers/*.js"]
+}
+
+const specs = swaggerJsdoc(options)
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs))
 
 // parse application/json
 app.use(bodyParser.json())
