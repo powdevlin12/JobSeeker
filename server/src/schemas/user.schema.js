@@ -33,6 +33,9 @@ const userSchema = new mongoose.Schema({
   },
   refreshToken : {
     type: String
+  },
+  confirmPasswordCode : {
+    type : Number
   }
 })
 
