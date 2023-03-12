@@ -13,7 +13,8 @@ module.exports.create = (req, res, next) => {
     username,
     password,
     role,
-    refreshToken
+    refreshToken,
+    undefined
   )
     .create()
     .then(user => {
@@ -33,6 +34,7 @@ module.exports.login = (req, res, next) => {
     , username
     , password
     , undefined
+    , undefined
     , undefined)
     .login()
     .then(user => {
@@ -50,7 +52,8 @@ module.exports.logOut = (req, res, next) => {
     , undefined
     , undefined
     , undefined
-    , undefined)
+    , undefined
+    ,undefined)
     .logOut()
     .then(data => {
       console.log(data)
@@ -65,6 +68,7 @@ module.exports.logOut = (req, res, next) => {
 
 module.exports.getAll = (req, res, next) => {
   new User(undefined
+    , undefined
     , undefined
     , undefined
     , undefined
@@ -104,6 +108,7 @@ module.exports.changePasswordController = (req, res, next) => {
     password,
     undefined,
     undefined,
+    undefined
   )
   .changePassword(newPassword)
   .then(response => res.status(201).json(response))
@@ -111,4 +116,40 @@ module.exports.changePasswordController = (req, res, next) => {
     console.log(err)
     return res.status(500).json(err)
   })
+}
+
+module.exports.forgotPassword = (req, res, next) => {
+  const {input} = req.body;
+  new User(
+    undefined,
+    undefined,
+    undefined,
+    input,
+    input,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined
+    ).forgotPassword()
+    .then(response => res.status(200).json(response))
+    .catch(err => res.status(500).json(err))
+}
+
+module.exports.confirmPassword = (req, res, next) => {
+  const {newPassword, confirmPasswordCode, email} = req.body
+  new User(
+    undefined,
+    undefined,
+    undefined,
+    email,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    confirmPasswordCode
+  ).confirmPassword(newPassword)
+  .then(response => res.status(200).json(response))
+    .catch(err => res.status(500).json(err))
 }

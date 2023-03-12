@@ -1,6 +1,7 @@
 const UserSchema = require('../schemas/user.schema')
 var jwt = require('jsonwebtoken');
 const { genaralAccessToken, genaralRefreshToken } = require('../utils');
+const { SendMailText } = require('../services/sendmail.service');
 module.exports = class User {
   #id
   #avatar
@@ -11,7 +12,8 @@ module.exports = class User {
   #password
   #role
   #refreshToken
-  constructor(id, avatar, name, email, phone, username, password, role = "staff", refreshToken = null) {
+  #confirmPasswordCode
+  constructor(id, avatar, name, email, phone, username, password, role = "staff", refreshToken = null, confirmPasswordCode=null) {
     this.#id = id
     this.#avatar = avatar
     this.#name = name
@@ -21,6 +23,7 @@ module.exports = class User {
     this.#password = password
     this.#role = role
     this.#refreshToken = refreshToken
+    this.#confirmPasswordCode = confirmPasswordCode
   }
 
   create = () => new Promise(async (resolve, reject) => {
@@ -45,7 +48,7 @@ module.exports = class User {
     user.password = this.#password
     user.role = this.#role
     user.refreshToken = this.#refreshToken
-
+    user.confirmPasswordCode = this.#confirmPasswordCode
     user.save()
       .then(user => resolve(user))
       .catch(err => reject(err))
@@ -140,6 +143,51 @@ module.exports = class User {
     }
   })
 
+  forgotPassword = () => new Promise(async (resolve, reject) => {
+    try {
+      const user = await UserSchema.findOne({$or : [
+        {email : this.#email},
+        {phone : this.#phone}
+      ]})
+      
+      if (user) {
+        const confirmPasswordCode = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000; 
+      
+        await UserSchema.updateOne({email : this.#email}, {confirmPasswordCode : confirmPasswordCode})
+        .then( async () => {
+          await SendMailText(this.#email, "Mã xác nhận gmail", `Mã xác nhận là : ${confirmPasswordCode}`)
+          .then(() => {
+              return resolve({message : "Chúng tôi đã gửi mã về cho bạn, vui lòng kiểm tra !", isSuccess : true})
+          })
+        })
+        .catch(err => reject({message : "Có lỗi từ server !", isSuccess : false, err : err}))
+      } else {
+        return reject({message : "Không tìm thấy tài khoản này, vui lòng thử lại !", isSuccess : false})
+      }
+    } catch (error) {
+      return reject({error : error, message : "Có lỗi từ server", isSuccess : false})
+    }
+  })
+
+  confirmPassword = (newPassword) => new Promise(async (resolve, reject) => {
+    console.log(this.#email, newPassword, this.#confirmPasswordCode)
+
+    try {
+      const user = await UserSchema.findOne({confirmPasswordCode : this.#confirmPasswordCode, email : this.#email})
+      if (user) {
+        const userUpdate = await UserSchema.updateOne({email : this.#email}, {password : newPassword})
+        if (userUpdate) {
+          return resolve({message : "Đặt lại mật khẩu thành công !", isSuccess : true})
+        }
+      }  else {
+        return reject({message : "Mã xác nhận không đúng, thử lại !", isSuccess : false})
+      }    
+    } catch (error) {
+      console.log(error)
+      return reject({message : "Lỗi từ server ! vui lòng thử lại !", error : error, isSuccess : false})
+    }
+  })
+
   logOut = (idUser) => new Promise(async (resolve, reject) => {
     try {
       const data = await UserSchema.updateOne({_id : idUser},{refreshToken : null})
@@ -161,5 +209,7 @@ module.exports = class User {
       reject(err)
     }
   })
+
+
 
 }

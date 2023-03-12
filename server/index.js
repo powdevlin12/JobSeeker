@@ -13,7 +13,11 @@ let bodyParser = require('body-parser')
 app.use(cors())
 
 // parse application/x-www-form-urlencoded
+// parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
+
+// parse application/json
+app.use(bodyParser.json())
 // swagger
 const swaggerJsdoc = require("swagger-jsdoc")
 const swaggerUi = require("swagger-ui-express")
