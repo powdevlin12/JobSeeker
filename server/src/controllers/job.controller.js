@@ -1,7 +1,8 @@
 
 const Job = require('../models/job.model');
 const jobSchema = require('../schemas/job.schema');
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const { uploadImage } = require('../services/uploadImage.service');
 
 module.exports.create = (req, res, next) => {
   const { name, description, requirement, hourWorking, postingDate, deadline, salary, locationWorking, idOccupation, idcompany } = req.body;
@@ -122,5 +123,8 @@ module.exports.getAllJobModerator = (req, res, next) => {
     }
   }
 
+}
+module.exports.uploadImage = (req, res, next) => {
+  console.log(req.body);
 }
 
