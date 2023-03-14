@@ -128,3 +128,18 @@ module.exports.uploadImage = (req, res, next) => {
   console.log(req.body);
 }
 
+
+module.exports.listJobByCompany = (req, res, next) => {
+  try {
+    var companyId = req.params.id
+    new Job()
+      .listJobByCompany(companyId)
+      .then((data) => { res.status(200).json({ message: "get success", data: data, isSuccess: true }) })
+      .catch((err) => { res.status(500).json({ message: err.message, isSuccess: false }) })
+
+  }
+  catch (err) {
+    res.status(500).json({ message: err.message, isSuccess: false })
+  }
+}
+

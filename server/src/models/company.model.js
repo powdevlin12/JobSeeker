@@ -9,7 +9,8 @@ module.exports = class Job {
   #phone
   #location
   #idUser
-  constructor(id, name, totalEmployee, type, about, phone, location, idUser) {
+  #isDelete
+  constructor(id, name, totalEmployee, type, about, phone, isDelete, location, idUser) {
     this.id = id
     this.#name = name
     this.#totalEmployee = totalEmployee
@@ -17,6 +18,7 @@ module.exports = class Job {
     this.#about = about
     this.#phone = phone
     this.#location = location
+    this.#isDelete = isDelete
     this.#idUser = idUser
   }
   create = () => {
@@ -28,6 +30,7 @@ module.exports = class Job {
       com.about = this.#about
       com.phone = this.#phone
       com.location = this.#location
+      com.isDelete = this.#isDelete
       com.idUser = this.#idUser
       com.save()
         .then((rel) => resolve(rel))

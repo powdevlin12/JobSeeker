@@ -6,7 +6,7 @@ module.exports.create = (req, res, next) => {
   const { name, totalEmployee, type, about, phone, location, idUser } = req.body;
   console.log(req.body)
   new Company(
-    undefined, name, totalEmployee, type, about, phone, location, idUser
+    undefined, name, totalEmployee, type, about, phone, false, location, idUser
   )
     .create()
     .then(user => {
