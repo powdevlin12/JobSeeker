@@ -1,7 +1,8 @@
 
 const Job = require('../models/job.model');
 const jobSchema = require('../schemas/job.schema');
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const { uploadImage } = require('../services/uploadImage.service');
 
 module.exports.create = (req, res, next) => {
   const { name, description, requirement, hourWorking, postingDate, deadline, salary, locationWorking, idOccupation, idcompany } = req.body;
@@ -122,5 +123,23 @@ module.exports.getAllJobModerator = (req, res, next) => {
     }
   }
 
+}
+module.exports.uploadImage = (req, res, next) => {
+  console.log(req.body);
+}
+
+
+module.exports.listJobByCompany = (req, res, next) => {
+  try {
+    var companyId = req.params.id
+    new Job()
+      .listJobByCompany(companyId)
+      .then((data) => { res.status(200).json({ message: "get success", data: data, isSuccess: true }) })
+      .catch((err) => { res.status(500).json({ message: err.message, isSuccess: false }) })
+
+  }
+  catch (err) {
+    res.status(500).json({ message: err.message, isSuccess: false })
+  }
 }
 

@@ -1,5 +1,6 @@
 const jobController = require('../controllers/job.controller')
 const { verifyToken, verifyTokenIsAdmin } = require('../middlewares')
+const { uploadImage } = require('../services/uploadImage.service')
 
 module.exports = require('express').Router()
   //lấy ra tất cả job hiện có
@@ -19,3 +20,6 @@ module.exports = require('express').Router()
   //Lấy danh sách tất cả công việc đã đăng của 1 công ty
   .get("/list/all-moderator-job", jobController.getAllJobModerator)
   .get("/list/search", jobController.getSearchJob)
+  .get("/list/company/:id", jobController.listJobByCompany)
+
+  .post("/upload/image", uploadImage.single('fileUpload'), jobController.uploadImage)

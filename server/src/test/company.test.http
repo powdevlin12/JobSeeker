@@ -9,16 +9,17 @@ GET {{urlDev}}/company/detail?id=63e10717173cbae6b2487520
 
 
 ### create company
-POST {{urlDev}}/v1/users
+POST {{urlDev}}/company/create
 Content-Type: : application/json
 
 {
-    "name":"Third company",
-    "totalEmployee":100,
-    "type":"good",
-    "about":"me",
+    "name":"FPT Software",
+    "totalEmployee":10000,
+    "type":"software, outsource",
+    "about":"top company about technology in Viet Nam",
     "phone":"033947586",
-    "location":"hihi",
+    "location":"Ho Chi Minh, Ha Noi",
+    "isDelete": "false",
     "idUser":"63dfb79ce2b2004977bc1b07"
 }
 

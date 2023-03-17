@@ -59,6 +59,8 @@ module.exports = class Job {
   readAll = () => {
     return new Promise((resolve, reject) => {
       return jobSchema.find({})
+        .populate('idCompany')
+        .populate('idOccupation')
         .then((job) => { resolve(job) })
         .catch((err) => { reject(err) })
     })
@@ -67,6 +69,8 @@ module.exports = class Job {
     return new Promise((resolve, reject) => {
       console.log('id ' + id)
       jobSchema.findById(id)
+        .populate('idCompany')
+        .populate('idOccupation')
         .then((job) => { console.log('job ' + job); return resolve(job) })
         .catch((err) => reject(err))
     })
@@ -95,13 +99,17 @@ module.exports = class Job {
               //console.log(i)
               switch (i) {
                 case 'localWorking':
-                  rel = rel.filter(item => item.locationWorking == condition[i])
+                  rel = rel.filter(item => {
+                    return item.locationWorking.some(place => condition[i].includes(place.toString()))
+                  })
                   break;
                 case 'idCompany':
                   rel = rel.filter(item => item.idCompany == condition[i])
                   break;
                 case 'idOccupation':
-                  rel = rel.filter(item => item.idOccupation == condition[i])
+                  rel = rel.filter(item => {
+                    return item.idOccupation.some(occupation => condition[i].includes(occupation.toString()))
+                  })
                   break;
                 default:
                   break;
@@ -135,13 +143,13 @@ module.exports = class Job {
           for (let i in condition) {
             switch (i) {
               case 'localWorking':
-                rel = rel.filter(item => item.locationWorking == condition[i])
+                rel = rel.filter(item => item.locationWorking in condition[i])
                 break;
               case 'idCompany':
                 rel = rel.filter(item => item.idCompany == condition[i])
                 break;
               case 'idOccupation':
-                rel = rel.filter(item => item.idOccupation == condition[i])
+                rel = rel.filter(item => item.idOccupation in condition[i])
                 break;
               default:
                 break;
@@ -151,5 +159,15 @@ module.exports = class Job {
         })
         .catch((err) => reject(err))
     })
+  }
+
+  listJobByCompany(companyId) {
+    return new Promise((resolve, reject) => {
+      jobSchema.find({ idCompany: companyId })
+        .populate('idCompany')
+        .populate('idOccupation')
+        .then((data) => resolve(data))
+        .catch((err) => reject(err));
+    });
   }
 }

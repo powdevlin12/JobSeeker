@@ -13,33 +13,32 @@ POST {{urlDev}}/job/create
 Content-Type: application/json
 
 {
-    "name":"4: job four",
-    "description":"urgly",
-    "requirement":"bad ts",
-    "hourWorking":"yes",
-    "postingDate":"2023-2-19",
-    "deadline":"2-28-2023",
-    "salary":"1000000",
-    "locationWorking":"",
-    "idOccupation":"63e10b141d3a066c8f791543",
-    "idcompany":"63e10717173cbae6b2487520"
+    "name":"Lập trình viên back-end",
+    "description":"Tham gia thiết kế giao diện, ...",
+    "requirement":"C#, ASP.NET Core",
+    "hourWorking":"40hrs/week",
+    "postingDate":"2-6-2023",
+    "deadline":"12-31-2024",
+    "salary":"20000000",
+    "locationWorking":["Hà Nội, Hồ Chí Minh"],
+    "idOccupation":["64100616fdd527b2f096944a","6410061cfdd527b2f096944c"],
+    "idcompany":"63e1078c173cbae6b2487523"
 }
 ### update job
 PUT {{urlDev}}/job/update
 Content-Type: application/json
 
-{   
-    "_id":"63e10b903cd4b72a98d9380e",
-    "name":"3: job three",
-    "description":"urgly",
-    "requirement":"bad ts",
-    "hourWorking":"yes",
+{
+    "name":"Lập trình viên back-end",
+    "description":"Tham gia thiết kế giao diện, ...",
+    "requirement":"C#, ASP.NET Core",
+    "hourWorking":"40hrs/week",
     "postingDate":"2-6-2023",
-    "deadline":"2-28-2023",
-    "salary":"1000000",
-    "locationWorking":"",
-    "idOccupation":"63e10b141d3a066c8f791543",
-    "idcompany":"63e10717173cbae6b2487520"
+    "deadline":"12-31-2024",
+    "salary":"20000000",
+    "locationWorking":["Hà Nội, Hồ Chí Minh"],
+    "idOccupation":["64100616fdd527b2f096944a","6410061cfdd527b2f096944c"],
+    "idcompany":"63e1078c173cbae6b2487523"
 }
 ### delete job
 DELETE {{urlDev}}/job/delete
@@ -47,4 +46,19 @@ Content-Type: application/json
 
 {   
     "_id":"63e10b903cd4b72a98d9380e"
+}
+
+### get all job of a company
+GET {{urlDev}}/job/list/company/641003eafe045f194923dc8a
+Content-Type: application/json
+
+### filter job
+### Có thể truyền vào body 1,2 hoặc cả 3 tham số
+GET {{urlDev}}/job/list/filter
+Content-Type: application/json
+
+{
+    "idOccupation" : ["64100616fdd527b2f096944a"],
+    "localWorking" : ["Hà Nội"],
+    "idCompany" : "",
 }
