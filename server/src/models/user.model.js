@@ -30,12 +30,18 @@ module.exports = class User {
     // check phone trung
     const phoneExist = await UserSchema.findOne({ phone: this.#phone })
     const emailExist = await UserSchema.findOne({ email: this.#email })
+    const usernameExist = await UserSchema.findOne({username : this.#username})
+
     if (phoneExist) {
-      return reject({ message: "Số điện thoại này đã đăng ký trước đó !", isSuccess: false })
+      return reject({ message: "Số điện thoại này đã đăng ký trước đó, vui lòng đổi lại !", isSuccess: false })
     }
     // check trung email
     if (emailExist) {
-      return reject({ message: "Email này đã đăng ký trước đó !", isSuccess: false })
+      return reject({ message: "Email này đã đăng ký trước đó, vui lòng đổi lại !", isSuccess: false })
+    }
+
+    if (usernameExist) {
+      return reject({ message: "Username này đã đăng ký trước đó, vui lòng đổi lại !", isSuccess: false })
     }
 
     // thoa man het thi them vo
