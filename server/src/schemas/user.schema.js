@@ -30,6 +30,12 @@ const userSchema = new mongoose.Schema({
   role : {
     type : String,
     require : true
+  },
+  refreshToken : {
+    type: String
+  },
+  confirmPasswordCode : {
+    type : Number
   }
 })
 

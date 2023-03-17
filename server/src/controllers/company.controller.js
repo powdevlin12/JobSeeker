@@ -25,6 +25,15 @@ module.exports.getOne = (req, res, next) => {
     )
     .catch(err => res.status(500).json({ message: err.message, success: err.isSuccess }))
 }
+/**
+ * @openapi
+ * /company/list:
+ *   get:
+ *     summary: Returns all company.
+ *     responses: 
+ *       '200':
+ *         description: OK
+ */
 module.exports.getAll = (req, res, next) => {
   console.log(req)
   new Company(
@@ -36,6 +45,7 @@ module.exports.getAll = (req, res, next) => {
     })
     .catch(err => res.status(500).json({ message: err.message, success: err.isSuccess }))
 }
+
 module.exports.updateOne = (req, res, next) => {
   const { _id, name, totalEmployee, type, about, phone, location, idUser } = req.body;
   const company = new companySchema()
