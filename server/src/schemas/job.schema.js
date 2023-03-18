@@ -32,20 +32,24 @@ const jobSchema = new mongoose.Schema({
     type: String,
     require: true
   },
-  locationWorking: {
-    type: String,
-    require: true
-  },
+  locationWorking: [
+    {
+      type: String,
+      require: true
+    }
+  ],
   idCompany: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Company",
     require: true
   },
-  idOccupation: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Occupation",
-    require: true
-  },
+  idOccupation: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Occupation",
+      require: true
+    }
+  ],
   status: {
     type: Boolean,
     require: true,
