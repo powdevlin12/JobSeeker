@@ -77,7 +77,7 @@ module.exports = class User {
               console.log(err)
             } else {
               console.log('token '+ token)
-              token ? resolve({...user._doc, accessToken : token}) : reject({message : "Không tạo được token"})
+              token ? resolve({accessToken : token}) : reject({message : "Không tạo được token"})
             }
           })
 
@@ -238,15 +238,12 @@ module.exports = class User {
 
   getUser = () => new Promise(async(resolve, reject) => {
     try {
-      const res = await UserSchema.findOne({_id : this.#id})
-      console.log('user : '+ res.data)
-      resolve(res.data)
+      const res = await UserSchema.findOne({_id : this.#id}).select(['-refreshToken'])
+      console.log(res)
+      resolve(res)
     } catch (error) {
       console.log(err)
       reject(err)
     }
   })
-
-
-
 }

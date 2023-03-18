@@ -189,3 +189,23 @@ module.exports.logout = (req, res, next) => {
   .then(result => res.status(200).json(result))
   .catch(err => res.status(500).json(err))
 }
+
+module.exports.getUser = (req, res, next) => {
+  const {_id} = req.data
+  new User(
+    _id,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined
+  ).getUser()
+  .then(result => res.status(200).json(result))
+  .catch(err => res.status(500).json(err))
+}
+
+
