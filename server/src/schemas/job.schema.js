@@ -21,7 +21,8 @@ const jobSchema = new mongoose.Schema({
   },
   postingDate: {
     type: Date,
-    require: true
+    require: true,
+    default: new Date()
   },
   deadline: {
     type: Date,
@@ -32,24 +33,24 @@ const jobSchema = new mongoose.Schema({
     type: String,
     require: true
   },
-  locationWorking: [
-    {
-      type: String,
-      require: true
-    }
-  ],
+  locationWorking:
+  {
+    type: String,
+    require: true
+  }
+  ,
   idCompany: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Company",
     require: true
   },
-  idOccupation: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Occupation",
-      require: true
-    }
-  ],
+  idOccupation:
+  {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Occupation",
+    require: true
+  }
+  ,
   status: {
     type: Boolean,
     require: true,

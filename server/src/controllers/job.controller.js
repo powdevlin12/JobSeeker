@@ -125,7 +125,7 @@ module.exports.getAllJobModerator = (req, res, next) => {
 
 }
 module.exports.uploadImage = (req, res, next) => {
-  console.log(req.body);
+  console.log(req.file.filename);
 }
 
 

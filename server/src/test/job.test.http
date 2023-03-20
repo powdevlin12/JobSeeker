@@ -16,12 +16,12 @@ Content-Type: application/json
     "name":"Lập trình viên back-end",
     "description":"Tham gia thiết kế giao diện, ...",
     "requirement":"C#, ASP.NET Core",
-    "hourWorking":"40hrs/week",
+    "hourWorking":"40hrs/week Monday to Friday",
     "postingDate":"2-6-2023",
     "deadline":"12-31-2024",
     "salary":"20000000",
-    "locationWorking":["Hà Nội, Hồ Chí Minh"],
-    "idOccupation":["64100616fdd527b2f096944a","6410061cfdd527b2f096944c"],
+    "locationWorking":"Hồ Chí Minh",
+    "idOccupation":"64100616fdd527b2f096944a",
     "idcompany":"63e1078c173cbae6b2487523"
 }
 ### update job
