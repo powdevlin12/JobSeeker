@@ -12,7 +12,7 @@ module.exports = {
                 undefined,
                 idJobSeeker,
                 idJob,
-                cv,
+                req.file.filename,
                 submitDate
             )
                 .create()

@@ -93,23 +93,27 @@ module.exports = class Job {
   filterJob = (condition) => {
     return new Promise((resolve, reject) => {
       jobSchema.find({ deadline: { $gt: new Date() } }).sort({ postingDate: -1 })
+        .populate('idOccupation')
+        .populate('idCompany')
         .then(
           rel => {
+            //console.log(rel)
             for (let i in condition) {
               //console.log(i)
               switch (i) {
-                case 'localWorking':
-                  rel = rel.filter(item => {
-                    return item.locationWorking.some(place => condition[i].includes(place.toString()))
-                  })
+                case 'locationWorking':
+                  //console.log(condition[i])
+                  rel = rel.filter(item => item.locationWorking == condition[i])
+                  //return item.locationWorking.some(place => condition[i].includes(place.toString())))
                   break;
                 case 'idCompany':
-                  rel = rel.filter(item => item.idCompany == condition[i])
+                  //console.log(condition[i])
+                  rel = rel.filter(item => item.idCompany._id.toString() == condition[i])
                   break;
                 case 'idOccupation':
-                  rel = rel.filter(item => {
-                    return item.idOccupation.some(occupation => condition[i].includes(occupation.toString()))
-                  })
+                  //console.log(condition[i])
+                  rel = rel.filter(item => item.idOccupation._id.toString() == condition[i])
+                  // return item.idOccupation.some(occupation => condition[i].includes(occupation.toString()))
                   break;
                 default:
                   break;

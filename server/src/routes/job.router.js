@@ -1,6 +1,6 @@
 const jobController = require('../controllers/job.controller')
 const { verifyToken, verifyTokenIsAdmin } = require('../middlewares')
-const { uploadImage } = require('../services/uploadImage.service')
+const { upload } = require('../services/uploadImage.service')
 
 module.exports = require('express').Router()
   //lấy ra tất cả job hiện có
@@ -22,4 +22,4 @@ module.exports = require('express').Router()
   .get("/list/search", jobController.getSearchJob)
   .get("/list/company/:id", jobController.listJobByCompany)
 
-  .post("/upload/image", uploadImage.single('fileUpload'), jobController.uploadImage)
+  .post("/upload/image", upload.Image.single('fileUpload'), jobController.uploadImage)
