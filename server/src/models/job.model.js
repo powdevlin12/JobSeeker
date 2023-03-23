@@ -47,10 +47,9 @@ module.exports = class Job {
   delete = (id) => {
     return new Promise(async (resolve, reject) => {
       try {
-        var job = jobSchema.findById(id);
-        job.status = false;
-        jobSchema.findByIdAndUpdate(job)
-        resolve(job)
+        jobSchema.findByIdAndUpdate(id, { status: false })
+          .then((res) => resolve(res))
+          .catch(err => reject(err))
       } catch (error) {
         reject(error)
       }
@@ -67,11 +66,12 @@ module.exports = class Job {
   }
   readOne = (id) => {
     return new Promise((resolve, reject) => {
-      console.log('id ' + id)
+      //console.log('id ' + id)
       jobSchema.findById(id)
         .populate('idCompany')
         .populate('idOccupation')
-        .then((job) => { console.log('job ' + job); return resolve(job) })
+        //console.log('job ' + job);
+        .then((job) => { return resolve(job) })
         .catch((err) => reject(err))
     })
   }

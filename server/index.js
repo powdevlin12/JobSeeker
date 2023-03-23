@@ -23,20 +23,20 @@ const swaggerJsdoc = require("swagger-jsdoc")
 const swaggerUi = require("swagger-ui-express")
 
 const options = {
-  definition : {
-    openapi : "3.0.0",
-    info : {
-      title : "Job Seeker",
-      version : "1.0.0",
-      description : "Dat Ngoc Ba Ngan Nghia"
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "Job Seeker",
+      version: "1.0.0",
+      description: "Dat Ngoc Ba Ngan Nghia"
     },
-    servers : [
+    servers: [
       {
-        url : 'http://localhost:8000'
+        url: 'http://localhost:8000'
       }
     ],
   },
-  apis : ["./src/controllers/*.js"]
+  apis: ["./src/controllers/*.js"]
 }
 
 const specs = swaggerJsdoc(options)
@@ -47,7 +47,8 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs))
 app.use(bodyParser.json())
 
 // static file 
-app.use(express.static(path.join(__dirname, './public')));
+//edit folder static
+app.use(express.static(path.join(__dirname, '../upload')));
 // view engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src/views'));
