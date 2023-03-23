@@ -9,7 +9,7 @@ Content-Type: : application/json
 
 {
     "idJobSeeker":"63dfb79ce2b2004977bc1b07",
-    "idCompany":"63e10717173cbae6b2487520",
+    "idJob":"63e10717173cbae6b2487520",
     "cv":"cvtest",
     "submitDate":"2023-02-07T12:41:12.123Z"
 }
