@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose")
 const applicationSchema = require("../schemas/application.schema")
 
 module.exports = class ApplicationModel {
@@ -63,6 +64,16 @@ module.exports = class ApplicationModel {
                     return resolve(rel)
                 })
                 .catch((err) => reject(err))
+        })
+    }
+    // danh sach cong viec da apply
+    getAllByUserId = (userId) => {
+        console.log(userId)
+        return new Promise(async (resolve, reject) => {
+            applicationSchema.find({ idJobSeeker: mongoose.Types.ObjectId(userId) })
+                .populate('idCompany')
+                .then((res) => resolve(res))
+                .catch(err => reject(err))
         })
     }
 }

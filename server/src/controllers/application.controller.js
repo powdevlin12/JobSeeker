@@ -44,7 +44,7 @@ module.exports = {
         if (decode.success) {
             const userId = decode.message
             const jobId = req.query.jobid
-            //console.log(jobId)
+            console.log(jobId + " - " + userId)
             new applicationModel()
                 .getAllByJobId(jobId, userId)
                 .then((rel) => res.status(200).json({ success: true, message: "get application success", data: rel }))
@@ -53,5 +53,19 @@ module.exports = {
             return res.status(500).json({ success: false, message: "get application failed" })
         }
 
+    },
+    getAllByUserrId: (req, res, next) => {
+        const token = req.header('Authorization')
+        const decode = getUserIdFromJWTToken(token)
+        if (decode.success) {
+            const userId = decode.message
+            //console.log(jobId)
+            new applicationModel()
+                .getAllByUserId(userId)
+                .then((res) => res.status(200).json({ success: true, message: "get application success", data: res }))
+                .catch((err) => res.status(500).json({ success: false, message: "get application failed", error: err }))
+        } else {
+            return res.status(500).json({ success: false, message: "get application failed" })
+        }
     }
 }
