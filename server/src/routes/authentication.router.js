@@ -17,8 +17,9 @@ module.exports = require('express').Router()
 
   })
   .get("/all", authController.getAll)
-
+  .get('/info-user', verifyToken, authController.getUser)
   .put('/logout', verifyToken ,authController.logOut)
   .put("/change-password",verifyToken ,authController.changePasswordController)
-  .put("/confirm-password/dafkjafkjafaj.com", authController.confirmPassword)
   .put("/confirm-password", authController.confirmPassword)
+  .post("/refresh-token", verifyToken, authController.createRefreshToken)
+  .patch("/logout", verifyToken, authController.logOut)

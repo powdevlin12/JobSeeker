@@ -1,6 +1,6 @@
-
 const User = require('../models/user.model');
 const userSchema = require('../schemas/user.schema');
+var jwt = require('jsonwebtoken');
 
 module.exports.create = (req, res, next) => {
   const { name, phone, email, password, avatar, username, role = "user", refreshToken = null } = req.body;
@@ -153,3 +153,59 @@ module.exports.confirmPassword = (req, res, next) => {
   .then(response => res.status(200).json(response))
     .catch(err => res.status(500).json(err))
 }
+
+module.exports.createRefreshToken = (req, res, next) => {
+  const {_id, role} = req.data
+  new User(
+    _id,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    role,
+    undefined,
+    undefined
+  ).createRefreshToken()
+  .then(result => res.status(200).json(result))
+  .catch(err => res.status(500).json(err))
+}
+
+module.exports.logout = (req, res, next) => {
+  const {_id} = req.data
+  new User(
+    _id,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined
+  ).logOut()
+  .then(result => res.status(200).json(result))
+  .catch(err => res.status(500).json(err))
+}
+
+module.exports.getUser = (req, res, next) => {
+  const {_id} = req.data
+  new User(
+    _id,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined
+  ).getUser()
+  .then(result => res.status(200).json(result))
+  .catch(err => res.status(500).json(err))
+}
+
+

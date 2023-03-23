@@ -77,20 +77,15 @@ module.exports = class User {
               console.log(err)
             } else {
               console.log('token '+ token)
-              token ? resolve({...user._doc, accessToken : token}) : reject({message : "Không tạo được token"})
+              token ? resolve({accessToken : token}) : reject({message : "Không tạo được token"})
             }
           })
-          
-          // jwt.sign({ _id, role }, process.env.SECRET_TOKEN_KEY, {
-          //   expiresIn: process.env.REFRESH_EXPIRESIN
-          // }, async(err, token) => {
-          //   if (err) {
-          //     console.log(err)
-          //   } else {
-          //     console.log('refresh token '+ token)
-          //     await UserSchema.updateOne({_id : user._id}, {refreshToken})
-          //   }
-          // })
+
+          let newAccessToken = jwt.sign({_id : user._id, role : user.role}, process.env.REFRESH_TOKEN_KEY, {
+            expiresIn : process.env.REFRESH_EXPIRESIN
+          })
+
+          await UserSchema.updateOne({_id : user._id}, {refreshToken : newAccessToken})
         } else {
           reject({ message: "Tài khoản hoặc mật khẩu không chính xác", isSuccess: false })
         }
@@ -101,6 +96,42 @@ module.exports = class User {
       .catch(err => reject(err))
   })
 
+  createRefreshToken = () => new Promise(async (resolve, reject) => {
+    try {
+      const user = await UserSchema.findById({_id : this.#id})
+      const {refreshToken} = user._doc
+      console.log(user, refreshToken)
+      
+      if (!refreshToken) {
+        return reject({message : "Not Authoraztion !", isSuccess : false})
+      }
+
+      let newRefreshToken, newAccessToken
+      jwt.verify(refreshToken, process.env.REFRESH_TOKEN_KEY, async (err, user) => {
+        if (err) {
+          console.log(err);
+        return reject({message : "Token not valid !", isSuccess : false})
+        }
+
+        const {_id, role} = user
+
+        newRefreshToken = jwt.sign({_id, role}, process.env.REFRESH_TOKEN_KEY, {
+          expiresIn : process.env.ACCESS_EXPIRESIN
+        })
+  
+        newAccessToken = jwt.sign({_id, role}, process.env.SECRET_TOKEN_KEY, {
+          expiresIn : process.env.REFRESH_EXPIRESIN
+        })
+  
+        await UserSchema.updateOne({_id}, {refreshToken : newRefreshToken})
+        resolve({accessToken : newAccessToken, isSuccess : true})
+      })
+    } catch (error) {
+      console.log(error)
+      return reject({message : "Error in server !", isSuccess : false})
+    }
+  })
+
   getAll = () => {
     return new Promise(async (resolve, reject) => {
       UserSchema.find({})
@@ -108,6 +139,7 @@ module.exports = class User {
         .catch((err) => { reject(err) })
     })
   }
+  
   update = (user) => {
     return new Promise((resolve, reject) => {
       UserSchema.findByIdAndUpdate(user._id, user)
@@ -194,28 +226,24 @@ module.exports = class User {
     }
   })
 
-  logOut = (idUser) => new Promise(async (resolve, reject) => {
+  logOut = () => new Promise(async (resolve, reject) => {
     try {
-      const data = await UserSchema.updateOne({_id : idUser},{refreshToken : null})
-      console.log(data) 
-      resolve(data)
+      const data = await UserSchema.updateOne({_id : this.#id},{refreshToken : null})
+      resolve({data, message : "Logout success", isSuccess : true})
     } catch (error) {
       console.log(error)
-      reject(error)
+      reject({error, message : "Error", isSuccess : false})
     }
   })
 
   getUser = () => new Promise(async(resolve, reject) => {
     try {
-      const res = await UserSchema.findOne({_id : this.#id})
-      console.log('user : '+ res.data)
-      resolve(res.data)
+      const res = await UserSchema.findOne({_id : this.#id}).select(['-refreshToken'])
+      console.log(res)
+      resolve(res)
     } catch (error) {
       console.log(err)
       reject(err)
     }
   })
-
-
-
 }
