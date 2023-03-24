@@ -124,7 +124,7 @@ module.exports = class User {
         })
   
         await UserSchema.updateOne({_id}, {refreshToken : newRefreshToken})
-        resolve({accessToken : newAccessToken, isSuccess : true})
+        resolve({accessToken : newAccessToken, refreshToken : newRefreshToken, isSuccess : true})
       })
     } catch (error) {
       console.log(error)
@@ -238,7 +238,7 @@ module.exports = class User {
 
   getUser = () => new Promise(async(resolve, reject) => {
     try {
-      const res = await UserSchema.findOne({_id : this.#id}).select(['-refreshToken'])
+      const res = await UserSchema.findOne({_id : this.#id})
       console.log(res)
       resolve(res)
     } catch (error) {
