@@ -1,4 +1,6 @@
+const { default: mongoose } = require('mongoose')
 const companySchema = require('../schemas/company.schema')
+const jobSchema = require('../schemas/job.schema')
 
 module.exports = class Job {
   id
@@ -45,10 +47,38 @@ module.exports = class Job {
     })
   }
   readAll = () => {
+    //need paging
     return new Promise((resolve, reject) => {
       return companySchema.find({})
-        .then((rel) => { resolve(rel) })
+        .then(async (rel) => {
+          for (let i = 0; i < rel.length; i++) {
+            rel[i] = rel[i].toObject();
+            var numJob = await jobSchema.find({ idCompany: mongoose.Types.ObjectId(rel[i]._id) })
+            rel[i]['numJob'] = numJob.length
+          }
+          resolve(rel)
+        })
         .catch((err) => { reject(err) })
+    })
+  }
+  getPaging = (page) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        var limit = 20
+        var total = await companySchema.countDocuments();
+        var page_total = Math.ceil(total / limit)
+        var result = await companySchema.find({}).skip(limit * page).limit(limit)
+        if (page < page_total) {
+          result.next = page + 1
+        }
+        if (page > 0) {
+          result.previous = page - 1
+        }
+        resolve(result)
+      }
+      catch (e) {
+        reject(e)
+      }
     })
   }
   readOne = (id) => {

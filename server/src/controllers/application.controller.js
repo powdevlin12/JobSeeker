@@ -39,20 +39,12 @@ module.exports = {
     ,
     //lấy tất cả những application của job cụ thể
     getAllByJobId: (req, res, next) => {
-        const token = req.header('Authorization')
-        const decode = getUserIdFromJWTToken(token)
-        if (decode.success) {
-            const userId = decode.message
-            const jobId = req.query.jobid
-            console.log(jobId + " - " + userId)
-            new applicationModel()
-                .getAllByJobId(jobId, userId)
-                .then((rel) => res.status(200).json({ success: true, message: "get application success", data: rel }))
-                .catch((err) => res.status(500).json({ success: false, message: "get application failed", error: err }))
-        } else {
-            return res.status(500).json({ success: false, message: "get application failed" })
-        }
-
+        const jobId = req.query.jobid
+        console.log(jobId)
+        new applicationModel()
+            .getAllByJobId(jobId)
+            .then((rel) => res.status(200).json({ success: true, message: "get application success", data: rel }))
+            .catch((err) => res.status(500).json({ success: false, message: "get application failed", error: err }))
     },
     getAllByUserrId: (req, res, next) => {
         const token = req.header('Authorization')
@@ -62,7 +54,7 @@ module.exports = {
             //console.log(jobId)
             new applicationModel()
                 .getAllByUserId(userId)
-                .then((res) => res.status(200).json({ success: true, message: "get application success", data: res }))
+                .then((data) => res.status(200).json({ success: true, message: "get application success", data: data }))
                 .catch((err) => res.status(500).json({ success: false, message: "get application failed", error: err }))
         } else {
             return res.status(500).json({ success: false, message: "get application failed" })

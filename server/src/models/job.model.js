@@ -1,6 +1,8 @@
 const jobSchema = require('../schemas/job.schema')
 const companySchema = require('../schemas/company.schema')
-
+const applicationSchema = require('../schemas/application.schema')
+const { default: mongoose } = require('mongoose')
+const { verifyToken, getUserIdFromJWTToken } = require('../middlewares')
 module.exports = class Job {
   id
   #name
@@ -64,15 +66,43 @@ module.exports = class Job {
         .catch((err) => { reject(err) })
     })
   }
-  readOne = (id) => {
+  readOne = (id, token) => {
     return new Promise((resolve, reject) => {
-      //console.log('id ' + id)
-      jobSchema.findById(id)
-        .populate('idCompany')
-        .populate('idOccupation')
-        //console.log('job ' + job);
-        .then((job) => { return resolve(job) })
-        .catch((err) => reject(err))
+      try {
+        const userId = getUserIdFromJWTToken(token)
+        //console.log(userId)
+        if (userId.success) {
+          jobSchema.findById(id)
+            .populate('idCompany')
+            .populate('idOccupation')
+            //console.log('job ' + job);
+            .then(async (job) => {
+              job = job.toObject()
+              var numApply = await applicationSchema.find({ idJob: mongoose.Types.ObjectId(job._id) })
+              var isApply = await applicationSchema.find({ idJob: mongoose.Types.ObjectId(job._id), idJobSeeker: mongoose.Types.ObjectId(userId.message) })
+              if (isApply.length > 0) job.isApply = true;
+              else job.isApply = false;
+              job['numApply'] = numApply.length;
+              //console.log('job: ' + job)
+              return resolve(job)
+            })
+            .catch((err) => reject(err))
+        }
+      }
+      catch (e) {
+        jobSchema.findById(id)
+          .populate('idCompany')
+          .populate('idOccupation')
+          //console.log('job ' + job);
+          .then(async (job) => {
+            var numApply = await applicationSchema.find({ idJob: mongoose.Types.ObjectId(job._id) })
+            job = job.toObject()
+            job['numApply'] = numApply.length;
+            //console.log('job: ' + job)
+            return resolve(job)
+          })
+          .catch((err) => reject(err))
+      }
     })
   }
   update = (job) => {
