@@ -46,6 +46,22 @@ module.exports.getAll = (req, res, next) => {
     .catch(err => res.status(500).json({ message: err.message, success: err.isSuccess }))
 }
 
+module.exports.getPaging = (req, res, next) => {
+  try {
+    new Company(
+      undefined, undefined, undefined, undefined, undefined, undefined, undefined
+    )
+      .getPaging(Number.parseInt(req.query.page))
+      .then(rel => {
+        res.status(200).json({ message: 'get all  company  success', success: true, data: rel })
+      })
+      .catch(err => res.status(500).json({ message: err.message, success: err.isSuccess }))
+  }
+  catch (e) {
+    res.status(500).json({ message: 'get all  failed', success: false })
+  }
+}
+
 module.exports.updateOne = (req, res, next) => {
   const { _id, name, totalEmployee, type, about, phone, location, idUser } = req.body;
   const company = new companySchema()

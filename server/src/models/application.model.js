@@ -51,14 +51,15 @@ module.exports = class ApplicationModel {
                 .catch(err => reject(err))
         })
     }
-    getAllByJobId = (jobId, userId) => {
+    getAllByJobId = (jobId) => {
         return new Promise(async (resolve, reject) => {
             //check xem user da~ apply chua, neu roi` thi tra ve false
-            const apply = await applicationSchema.find({ idJob: jobId, idJobSeeker: userId }).exec()
-            if (apply) {
-                return reject("You already apply this job")
-            }
+            // const apply = await applicationSchema.find({ idJob: jobId}).exec()
+            // if (apply) {
+            //     return reject("You already apply this job")
+            // }
             applicationSchema.find({ idJob: jobId })
+                .populate('idJobSeeker')
                 .then((rel) => {
                     //console.log(rel)
                     return resolve(rel)
@@ -68,11 +69,14 @@ module.exports = class ApplicationModel {
     }
     // danh sach cong viec da apply
     getAllByUserId = (userId) => {
-        console.log(userId)
+        //console.log(userId)
         return new Promise(async (resolve, reject) => {
             applicationSchema.find({ idJobSeeker: mongoose.Types.ObjectId(userId) })
-                .populate('idCompany')
-                .then((res) => resolve(res))
+                .populate({
+                    path: 'idJob',
+                    populate: { path: 'idCompany' }
+                })
+                .then((res) => { return resolve(res) })
                 .catch(err => reject(err))
         })
     }

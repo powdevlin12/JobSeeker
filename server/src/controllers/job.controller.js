@@ -26,8 +26,9 @@ module.exports.create = (req, res, next) => {
 
 module.exports.readOne = (req, res, next) => {
   const { id } = req.query;
+  const token = req.header('Authorization')
   new Job()
-    .readOne(id)
+    .readOne(id, token)
     .then(rel => {
       res.status(200).json({ message: 'get job success', success: true, data: rel })
     })
