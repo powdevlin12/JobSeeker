@@ -37,8 +37,8 @@ module.exports.login = (req, res, next) => {
     , undefined
     , undefined)
     .login()
-    .then(user => {
-      res.status(200).json({ message: 'Đăng nhập thành công !', success: true, data: user })
+    .then(result => {
+      res.status(200).json({ message: 'Đăng nhập thành công !', success: true, data: result })
     })
     .catch(err => res.status(500).json({ message: err.message, success: err.isSuccess }))
 }

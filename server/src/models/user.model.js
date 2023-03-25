@@ -70,21 +70,15 @@ module.exports = class User {
       if (user) {
         if (user.password === this.#password) {
 
-          jwt.sign({ _id : user._id, role : user.role }, process.env.SECRET_TOKEN_KEY, {
+          const newRefreshToken = jwt.sign({ _id : user._id, role : user.role }, process.env.SECRET_TOKEN_KEY, {
             expiresIn: process.env.ACCESS_EXPIRESIN
-          }, function (err, token) {
-            if (err) {
-              console.log(err)
-            } else {
-              console.log('token '+ token)
-              token ? resolve({accessToken : token}) : reject({message : "Không tạo được token"})
-            }
           })
 
           let newAccessToken = jwt.sign({_id : user._id, role : user.role}, process.env.REFRESH_TOKEN_KEY, {
             expiresIn : process.env.REFRESH_EXPIRESIN
           })
-
+          
+          resolve({accessToken : newAccessToken, refreshToken : newRefreshToken})
           await UserSchema.updateOne({_id : user._id}, {refreshToken : newAccessToken})
         } else {
           reject({ message: "Tài khoản hoặc mật khẩu không chính xác", isSuccess: false })
