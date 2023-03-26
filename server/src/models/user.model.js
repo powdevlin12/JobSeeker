@@ -70,11 +70,11 @@ module.exports = class User {
       if (user) {
         if (user.password === this.#password) {
 
-          const newRefreshToken = jwt.sign({ _id : user._id, role : user.role }, process.env.SECRET_TOKEN_KEY, {
+          const newRefreshToken = jwt.sign({ _id : user._id, role : user.role }, process.env.REFRESH_TOKEN_KEY, {
             expiresIn: process.env.ACCESS_EXPIRESIN
           })
 
-          let newAccessToken = jwt.sign({_id : user._id, role : user.role}, process.env.REFRESH_TOKEN_KEY, {
+          let newAccessToken = jwt.sign({_id : user._id, role : user.role}, process.env.SECRET_TOKEN_KEY, {
             expiresIn : process.env.REFRESH_EXPIRESIN
           })
           
