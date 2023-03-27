@@ -208,4 +208,24 @@ module.exports.getUser = (req, res, next) => {
   .catch(err => res.status(500).json(err))
 }
 
+module.exports.editProfile = (req, res, next) => {
+  const {_id} = req.data
+  const {name, email, phone} = req.body
+  console.log(req.body)
+  // console.log(name, email, phone)
+  new User(
+    _id,
+    undefined,
+    name,
+    email,
+    phone,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined
+  ).patchUser()
+  .then(result => res.status(200).json(result))
+  .catch(err => res.status(500).json(err))
+}
 

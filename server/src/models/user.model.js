@@ -228,4 +228,37 @@ module.exports = class User {
       reject(err)
     }
   })
+
+  patchUser = () => new Promise(async(resolve, reject) => {
+    try {
+      if (this.#email) {
+        const checkEmail = await UserSchema.findOne({email : this.#email})
+        
+        if (checkEmail) {
+          return reject({message : "Cập nhật thất bại, email này đã tồn tại trong hệ thống !", isSuccess : false})
+        }
+      }
+
+      if (this.#phone) {
+        const checkPhone = await UserSchema.findOne({phone : this.#phone})
+      
+        if (checkPhone) {
+          return reject({message : "Cập nhật thất bại, số điện thoại này đã tồn tại trong hệ thống !", isSuccess : false})
+        }
+      }
+      // check email vs phone is exist
+      const newUser = {
+        phone : this.#phone,
+        email : this.#email,
+        name : this.#name
+      }
+      
+      await UserSchema.updateOne({_id : this.#id}, {...newUser})
+      resolve({message : "Cập nhật thông tin thành công !", isSuccess : true})
+    } catch (error) {
+      console.log(error)
+      reject({message : "Lỗi từ server", isSuccess : false})
+    }
+  })
+
 }
