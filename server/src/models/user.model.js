@@ -71,11 +71,11 @@ module.exports = class User {
         if (user.password === this.#password) {
 
           const newRefreshToken = jwt.sign({ _id : user._id, role : user.role }, process.env.REFRESH_TOKEN_KEY, {
-            expiresIn: process.env.ACCESS_EXPIRESIN
+            expiresIn: process.env.REFRESH_EXPIRESIN
           })
 
           let newAccessToken = jwt.sign({_id : user._id, role : user.role}, process.env.SECRET_TOKEN_KEY, {
-            expiresIn : process.env.REFRESH_EXPIRESIN
+            expiresIn : process.env.ACCESS_EXPIRESIN
           })
           
           resolve({accessToken : newAccessToken, refreshToken : newRefreshToken})
@@ -93,33 +93,21 @@ module.exports = class User {
   createRefreshToken = () => new Promise(async (resolve, reject) => {
     try {
       const user = await UserSchema.findById({_id : this.#id})
-      const {refreshToken} = user._doc
-      console.log(user, refreshToken)
-      
-      if (!refreshToken) {
-        return reject({message : "Not Authoraztion !", isSuccess : false})
-      }
+      console.log(user)
 
-      let newRefreshToken, newAccessToken
-      jwt.verify(refreshToken, process.env.REFRESH_TOKEN_KEY, async (err, user) => {
-        if (err) {
-          console.log(err);
-        return reject({message : "Token not valid !", isSuccess : false})
-        }
+      let newRefreshToken, newAccessToken       
+      const {_id, role} = user
 
-        const {_id, role} = user
-
-        newRefreshToken = jwt.sign({_id, role}, process.env.REFRESH_TOKEN_KEY, {
-          expiresIn : process.env.ACCESS_EXPIRESIN
-        })
-  
-        newAccessToken = jwt.sign({_id, role}, process.env.SECRET_TOKEN_KEY, {
-          expiresIn : process.env.REFRESH_EXPIRESIN
-        })
-  
-        await UserSchema.updateOne({_id}, {refreshToken : newRefreshToken})
-        resolve({accessToken : newAccessToken, refreshToken : newRefreshToken, isSuccess : true})
+      newRefreshToken = jwt.sign({_id, role}, process.env.REFRESH_TOKEN_KEY, {
+        expiresIn : process.env.REFRESH_EXPIRESIN
       })
+
+      newAccessToken = jwt.sign({_id, role}, process.env.SECRET_TOKEN_KEY, {
+        expiresIn : process.env.ACCESS_EXPIRESIN
+      })
+
+      await UserSchema.updateOne({_id}, {refreshToken : newRefreshToken})
+      resolve({accessToken : newAccessToken, refreshToken : newRefreshToken, isSuccess : true})
     } catch (error) {
       console.log(error)
       return reject({message : "Error in server !", isSuccess : false})

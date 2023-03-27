@@ -60,5 +60,28 @@ module.exports = {
         return { success: false, message: error }
       }
     }
-  }
+  },
+  verifyTokenRefresh: async (req, res, next) => {
+    const token = req.header('Authorization')
+    if (token) {
+      const refreshToken = token.split(" ")[1]
+      console.log(refreshToken)
+      try {
+        jwt.verify(refreshToken, process.env.REFRESH_TOKEN_KEY, (err, data) => {
+          if (err) {
+            console.log(err)
+            return res.status(401).json({ message: "Not authozation", isSuccess: false })
+          }
+          console.log("data : "+ data)
+          req.data = data
+        })
+        next()
+      } catch (error) {
+        console.log(error)
+        return res.status(500).json({ message: "Server is error", isSuccess: false })
+      }
+    } else {
+      return res.status(400).json({ message: "No token", isSuccess: false })
+    }
+  },
 }

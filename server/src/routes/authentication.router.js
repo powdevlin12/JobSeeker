@@ -2,12 +2,12 @@ const authController = require('../controllers/authentication.controller')
 
 const { SendMail, SendMailText } = require('../services/sendmail.service')
 
-const { verifyToken } = require('../middlewares')
+const { verifyToken, verifyTokenRefresh } = require('../middlewares')
 
 
 module.exports = require('express').Router()
   .post("/login", authController.login)
-  .post("/register", authController.create)
+  .post("/register",authController.create)
   .post("/forgot-password", authController.forgotPassword)
   .get("/all", authController.getAll)
   .get("/mail", (req, res) => {
@@ -21,5 +21,5 @@ module.exports = require('express').Router()
   .put('/logout', verifyToken ,authController.logOut)
   .put("/change-password",verifyToken ,authController.changePasswordController)
   .put("/confirm-password", authController.confirmPassword)
-  .post("/refresh-token", verifyToken, authController.createRefreshToken)
+  .post("/refresh-token", verifyTokenRefresh, authController.createRefreshToken)
   .patch("/logout", verifyToken, authController.logOut)
