@@ -250,7 +250,8 @@ module.exports = class User {
       const newUser = {
         phone : this.#phone,
         email : this.#email,
-        name : this.#name
+        name : this.#name,
+        avatar : this.#avatar
       }
       
       await UserSchema.updateOne({_id : this.#id}, {...newUser})

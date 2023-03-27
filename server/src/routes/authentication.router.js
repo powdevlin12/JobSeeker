@@ -3,6 +3,7 @@ const authController = require('../controllers/authentication.controller')
 const { SendMail, SendMailText } = require('../services/sendmail.service')
 
 const { verifyToken, verifyTokenRefresh } = require('../middlewares')
+const { upload } = require('../services/uploadImage.service')
 
 
 module.exports = require('express').Router()
@@ -23,4 +24,4 @@ module.exports = require('express').Router()
   .put("/confirm-password", authController.confirmPassword)
   .post("/refresh-token", verifyTokenRefresh, authController.createRefreshToken)
   .patch("/logout", verifyToken, authController.logOut)
-  .patch("/edit-profile", verifyToken, authController.editProfile)
+  .patch("/edit-profile", [verifyToken, upload.Image.single("avatar")], authController.editProfile)
