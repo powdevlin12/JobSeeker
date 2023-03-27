@@ -1,6 +1,8 @@
 const User = require('../models/user.model');
 const userSchema = require('../schemas/user.schema');
 var jwt = require('jsonwebtoken');
+const path = require('path')
+
 
 module.exports.create = (req, res, next) => {
   const { name, phone, email, password, avatar, username, role = "user", refreshToken = null } = req.body;
@@ -208,4 +210,25 @@ module.exports.getUser = (req, res, next) => {
   .catch(err => res.status(500).json(err))
 }
 
+module.exports.editProfile = (req, res, next) => {
+  const {_id} = req.data
+  const {name, email, phone} = req.body
+  const file = req.file
+  console.log(file)
+  // console.log(name, email, phone)
+  new User(
+    _id,
+    file.filename,
+    name,
+    email,
+    phone,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined
+  ).patchUser()
+  .then(result => res.status(200).json(result))
+  .catch(err => res.status(500).json(err))
+}
 
