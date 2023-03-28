@@ -1,3 +1,4 @@
+const { getUserIdFromJWTToken } = require('../middlewares');
 const User = require('../models/user.model');
 const userSchema = require('../schemas/user.schema');
 var jwt = require('jsonwebtoken');
@@ -55,7 +56,7 @@ module.exports.logOut = (req, res, next) => {
     , undefined
     , undefined
     , undefined
-    ,undefined)
+    , undefined)
     .logOut()
     .then(data => {
       console.log(data)
@@ -63,7 +64,7 @@ module.exports.logOut = (req, res, next) => {
     })
     .catch(err => {
       console.log(err)
-      return res.status(401).json({message : "logout success", isSuccess : false, err})
+      return res.status(401).json({ message: "logout success", isSuccess: false, err })
     }
     )
 }
@@ -98,8 +99,8 @@ module.exports.updateOne = (req, res, next) => {
     .catch(err => { res.status(500).json({ message: err.message, success: err.isSuccess }) })
 }
 module.exports.changePasswordController = (req, res, next) => {
-  const {password, newPassword} = req.body;
-  console.log(req.data)  
+  const { password, newPassword } = req.body;
+  console.log(req.data)
   new User(
     req.data._id,
     undefined,
@@ -112,16 +113,16 @@ module.exports.changePasswordController = (req, res, next) => {
     undefined,
     undefined
   )
-  .changePassword(newPassword)
-  .then(response => res.status(201).json(response))
-  .catch(err => {
-    console.log(err)
-    return res.status(500).json(err)
-  })
+    .changePassword(newPassword)
+    .then(response => res.status(201).json(response))
+    .catch(err => {
+      console.log(err)
+      return res.status(500).json(err)
+    })
 }
 
 module.exports.forgotPassword = (req, res, next) => {
-  const {input} = req.body;
+  const { input } = req.body;
   new User(
     undefined,
     undefined,
@@ -133,13 +134,13 @@ module.exports.forgotPassword = (req, res, next) => {
     undefined,
     undefined,
     undefined
-    ).forgotPassword()
+  ).forgotPassword()
     .then(response => res.status(200).json(response))
     .catch(err => res.status(500).json(err))
 }
 
 module.exports.confirmPassword = (req, res, next) => {
-  const {newPassword, confirmPasswordCode, email} = req.body
+  const { newPassword, confirmPasswordCode, email } = req.body
   new User(
     undefined,
     undefined,
@@ -152,12 +153,12 @@ module.exports.confirmPassword = (req, res, next) => {
     undefined,
     confirmPasswordCode
   ).confirmPassword(newPassword)
-  .then(response => res.status(200).json(response))
+    .then(response => res.status(200).json(response))
     .catch(err => res.status(500).json(err))
 }
 
 module.exports.createRefreshToken = (req, res, next) => {
-  const {_id, role} = req.data
+  const { _id, role } = req.data
   new User(
     _id,
     undefined,
@@ -170,12 +171,12 @@ module.exports.createRefreshToken = (req, res, next) => {
     undefined,
     undefined
   ).createRefreshToken()
-  .then(result => res.status(200).json(result))
-  .catch(err => res.status(500).json(err))
+    .then(result => res.status(200).json(result))
+    .catch(err => res.status(500).json(err))
 }
 
 module.exports.logout = (req, res, next) => {
-  const {_id} = req.data
+  const { _id } = req.data
   new User(
     _id,
     undefined,
@@ -188,12 +189,12 @@ module.exports.logout = (req, res, next) => {
     undefined,
     undefined
   ).logOut()
-  .then(result => res.status(200).json(result))
-  .catch(err => res.status(500).json(err))
+    .then(result => res.status(200).json(result))
+    .catch(err => res.status(500).json(err))
 }
 
 module.exports.getUser = (req, res, next) => {
-  const {_id} = req.data
+  const { _id } = req.data
   new User(
     _id,
     undefined,
@@ -206,13 +207,13 @@ module.exports.getUser = (req, res, next) => {
     undefined,
     undefined
   ).getUser()
-  .then(result => res.status(200).json(result))
-  .catch(err => res.status(500).json(err))
+    .then(result => res.status(200).json(result))
+    .catch(err => res.status(500).json(err))
 }
 
 module.exports.editProfile = (req, res, next) => {
-  const {_id} = req.data
-  const {name, email, phone} = req.body
+  const { _id } = req.data
+  const { name, email, phone } = req.body
   const file = req.file
   console.log(file)
   // console.log(name, email, phone)
@@ -228,7 +229,7 @@ module.exports.editProfile = (req, res, next) => {
     undefined,
     undefined
   ).patchUser()
-  .then(result => res.status(200).json(result))
-  .catch(err => res.status(500).json(err))
+    .then(result => res.status(200).json(result))
+    .catch(err => res.status(500).json(err))
 }
 
