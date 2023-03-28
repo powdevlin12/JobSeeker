@@ -14,6 +14,7 @@ module.exports = {
             res.status(401).json({ message: "Not authozation", isSuccess: false })
           }
           else {
+            req.data = data
             next()
           }
         })
