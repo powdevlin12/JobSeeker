@@ -2,18 +2,19 @@ const applicationModel = require('../models/application.model')
 const { getUserIdFromJWTToken } = require('../middlewares/index')
 const companySchema = require('../schemas/company.schema')
 const applicationSchema = require('../schemas/application.schema')
+const { upload } = require('../services/uploadImage.service')
 module.exports = {
     create: (req, res, next) => {
         const rel = getUserIdFromJWTToken(req.header('Authorization'))
         if (rel.success) {
             const idJobSeeker = rel.message
-            const { idJob, cv, submitDate } = req.body
+            const { idJob, cv } = req.body
             new applicationModel(
                 undefined,
                 idJobSeeker,
                 idJob,
                 req.file.filename,
-                submitDate
+                new Date()
             )
                 .create()
                 .then((rel) => res.status(200).json({ message: 'application job success', success: true, data: rel }))

@@ -3,7 +3,6 @@ const Job = require('../models/job.model');
 const jobSchema = require('../schemas/job.schema');
 const jwt = require('jsonwebtoken');
 const { uploadImage } = require('../services/uploadImage.service');
-
 module.exports.create = (req, res, next) => {
   const { name, description, requirement, hourWorking, postingDate, deadline, salary, locationWorking, idOccupation, idcompany } = req.body;
   new Job(undefined,
@@ -42,7 +41,7 @@ module.exports.readAll = (req, res, next) => {
     .then(rel => {
       res.status(200).json({ message: 'get all job success', success: true, data: rel })
     })
-    .catch(err => res.status(500).json({ message: err.message, success: err.isSuccess }))
+    .catch(err => res.status(500).json({ message: err.message, success: false }))
 }
 module.exports.delete = (req, res, next) => {
   const { _id } = req.body
@@ -53,7 +52,7 @@ module.exports.delete = (req, res, next) => {
     .then(rel => {
       res.status(200).json({ message: 'delete success', success: true, data: rel })
     })
-    .catch(err => res.status(500).json({ message: err.message, success: err.isSuccess }))
+    .catch(err => res.status(500).json({ message: err.message, success: false }))
 }
 
 module.exports.updateOne = (req, res, next) => {
@@ -67,6 +66,7 @@ module.exports.updateOne = (req, res, next) => {
   job.postingDate = postingDate
   job.deadline = deadline
   job.salary = salary
+  job.status = true;
   job.locationWorking = locationWorking
   job.idOccupation = idOccupation
   job.idCompany = idCompany

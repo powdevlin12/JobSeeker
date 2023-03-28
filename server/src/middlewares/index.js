@@ -10,11 +10,13 @@ module.exports = {
         jwt.verify(accessToken, process.env.SECRET_TOKEN_KEY, (err, data) => {
           if (err) {
             console.log(err)
-            return res.status(401).json({ message: "Not authozation", isSuccess: false })
+            req.data = data
+            res.status(401).json({ message: "Not authozation", isSuccess: false })
           }
-          req.data = data
+          else {
+            next()
+          }
         })
-        next()
       } catch (error) {
         console.log(error)
         return res.status(500).json({ message: "Server is error", isSuccess: false })
@@ -72,7 +74,7 @@ module.exports = {
             console.log(err)
             return res.status(401).json({ message: "Not authozation", isSuccess: false })
           }
-          console.log("data : "+ data)
+          console.log("data : " + data)
           req.data = data
         })
         next()
