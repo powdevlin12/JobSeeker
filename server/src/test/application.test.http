@@ -5,7 +5,7 @@ GET  {{urlDev}}/application/list?idCompany=63e10717173cbae6b2487520
 ### GET  {{urlDev}}/application/detail
 ### application job
 POST {{urlDev}}/application/create
-Content-Type: : application/json
+Content-Type: : multipart/form-data
 
 {
     "idJobSeeker":"63dfb79ce2b2004977bc1b07",

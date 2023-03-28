@@ -49,9 +49,14 @@ module.exports = class Job {
   delete = (id) => {
     return new Promise(async (resolve, reject) => {
       try {
-        jobSchema.findByIdAndUpdate(id, { status: false })
-          .then((res) => resolve(res))
-          .catch(err => reject(err))
+        var jobFind = await jobSchema.findById(id);
+        if (!jobFind.status) {
+          reject({ message: "job already deleted" })
+        } else {
+          jobSchema.findByIdAndUpdate(id, { status: false })
+            .then((res) => resolve(res))
+            .catch(err => reject(err))
+        }
       } catch (error) {
         reject(error)
       }
@@ -106,10 +111,16 @@ module.exports = class Job {
     })
   }
   update = (job) => {
-    return new Promise((resolve, reject) => {
-      jobSchema.findByIdAndUpdate(job._id, job)
-        .then(rel => resolve(job))
-        .catch(err => reject(err))
+    return new Promise(async (resolve, reject) => {
+      var jobFind = await jobSchema.findById(job._id);
+      if (!jobFind.status) {
+        reject({ message: "this job was deleted. Can't update." })
+      } else {
+        jobSchema.findByIdAndUpdate(job._id, job)
+          .then(rel => resolve(job))
+          .catch(err => reject(err))
+      }
+
     })
   }
   getSortByDate = () => {
@@ -122,7 +133,7 @@ module.exports = class Job {
   //lọc job theo các tiêu chí sắp xếp mới nhất, tìm theo locationWorking, idCompany, idOccupation
   filterJob = (condition) => {
     return new Promise((resolve, reject) => {
-      jobSchema.find({ deadline: { $gt: new Date() } }).sort({ postingDate: -1 })
+      jobSchema.find({ status: true, deadline: { $gt: new Date() } }).sort({ postingDate: -1 })
         .populate('idOccupation')
         .populate('idCompany')
         .then(
@@ -133,16 +144,16 @@ module.exports = class Job {
               switch (i) {
                 case 'locationWorking':
                   //console.log(condition[i])
-                  rel = rel.filter(item => item.locationWorking == condition[i])
+                  rel = rel.filter(item => condition[i].includes(item.locationWorking))
                   //return item.locationWorking.some(place => condition[i].includes(place.toString())))
                   break;
                 case 'idCompany':
                   //console.log(condition[i])
-                  rel = rel.filter(item => item.idCompany._id.toString() == condition[i])
+                  rel = rel.filter(item => condition[i].includes(item.idCompany._id.toString()))
                   break;
                 case 'idOccupation':
                   //console.log(condition[i])
-                  rel = rel.filter(item => item.idOccupation._id.toString() == condition[i])
+                  rel = rel.filter(item => condition[i].includes(item.idOccupation._id.toString()))
                   // return item.idOccupation.some(occupation => condition[i].includes(occupation.toString()))
                   break;
                 default:

@@ -10,15 +10,15 @@ module.exports = require('express').Router()
   //thông tin chi tiết của job
   .get("/detail", jobController.readOne)
   //tạo job mới
-  .post("/create", jobController.create)
+  .post("/create", verifyTokenIsAdmin, jobController.create)
   //xóa job
-  .delete("/delete", jobController.delete)
+  .delete("/delete", verifyTokenIsAdmin, jobController.delete)
   //update job
-  .put("/update", jobController.updateOne)
+  .put("/update", verifyTokenIsAdmin, jobController.updateOne)
   // lọc job theo idOccupation, idCompany, Sắp xếp, ...
   .get("/list/filter", jobController.getFilterJob)
   //Lấy danh sách tất cả công việc đã đăng của 1 công ty
-  .get("/list/all-moderator-job", jobController.getAllJobModerator)
+  .get("/list/all-moderator-job", verifyTokenIsAdmin, jobController.getAllJobModerator)
   .get("/list/search", jobController.getSearchJob)
   .get("/list/company/:id", jobController.listJobByCompany)
 

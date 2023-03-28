@@ -21,7 +21,7 @@ module.exports = class ApplicationModel {
             app.idJobSeeker = this.#idJobSeeker
             app.idJob = this.#idJob
             app.cv = this.#cv
-            app.submitDate = this.#submitDate
+            app.submitDate = new Date()
             app.save()
                 .then((rel) => resolve(rel))
                 .catch(err => reject(err))
