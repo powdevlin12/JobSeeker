@@ -34,10 +34,9 @@ module.exports.readOne = (req, res, next) => {
     .catch(err => res.status(500).json({ message: err.message, success: err.isSuccess }))
 }
 module.exports.readAll = (req, res, next) => {
-  new Job(
-    undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
-  )
-    .readAll()
+  var page = req.query.page
+  new Job()
+    .readAll(page)
     .then(rel => {
       res.status(200).json({ message: 'get all job success', success: true, data: rel })
     })

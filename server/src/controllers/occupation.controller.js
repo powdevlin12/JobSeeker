@@ -24,10 +24,9 @@ module.exports.getOne = (req, res, next) => {
     .catch(err => res.status(500).json({ message: err.message, success: err.isSuccess }))
 }
 module.exports.getAll = (req, res, next) => {
-  new Occupation(
-    undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
-  )
-    .readAll()
+  const page = req.query.page
+  new Occupation()
+    .readAll(page)
     .then(rel => {
       res.status(200).json({ message: 'get all occupation success', success: true, data: rel })
     })

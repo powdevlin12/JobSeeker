@@ -62,13 +62,27 @@ module.exports = class Job {
       }
     })
   }
-  readAll = () => {
-    return new Promise((resolve, reject) => {
-      return jobSchema.find({})
-        .populate('idCompany')
-        .populate('idOccupation')
-        .then((job) => { resolve(job) })
-        .catch((err) => { reject(err) })
+  readAll = (page) => {
+    return new Promise(async (resolve, reject) => {
+      const page_limit = process.env.PAGE_LIMIT
+      const total_job = await jobSchema.countDocuments()
+      const page_total = Math.ceil(total_job / page_limit)
+      if (page === undefined) {
+        return jobSchema.find({}).limit(page_limit)
+          .populate('idCompany')
+          .populate('idOccupation')
+          .then((job) => { return resolve({ data: job, page_total: page_total, current_page: 0, job_per_page: Number.parseInt(page_limit) }) })
+          .catch((err) => { reject(err) })
+      }
+      page = Number.parseInt(page)
+      if (page >= 0 && page <= page_total) {
+        return jobSchema.find({}).skip(page).limit(page_limit)
+          .populate('idCompany')
+          .populate('idOccupation')
+          .then((job) => { return resolve({ data: job, page_total: page_total, current_page: page, job_per_page: Number.parseInt(page_limit) }) })
+          .catch((err) => { reject(err) })
+      }
+      else reject({ message: "can't get list job" })
     })
   }
   readOne = (id, token) => {

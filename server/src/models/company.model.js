@@ -41,24 +41,49 @@ module.exports = class Job {
   }
   delete = (id) => {
     return new Promise(async (resolve, reject) => {
-      companySchema.findByIdAndDelete(id)
+      const company = await companySchema.findById(id);
+      if (company.isDelete) {
+        reject({ message: "This company has been deleted!" })
+      }
+      companySchema.findByIdAndUpdate(id, { isDelete: true })
         .then(rel => resolve(rel))
         .catch(err => reject(err))
     })
   }
-  readAll = () => {
+  readAll = (page) => {
     //need paging
-    return new Promise((resolve, reject) => {
-      return companySchema.find({})
-        .then(async (rel) => {
-          for (let i = 0; i < rel.length; i++) {
-            rel[i] = rel[i].toObject();
-            var numJob = await jobSchema.find({ idCompany: mongoose.Types.ObjectId(rel[i]._id) })
-            rel[i]['numJob'] = numJob.length
-          }
-          resolve(rel)
-        })
-        .catch((err) => { reject(err) })
+    return new Promise(async (resolve, reject) => {
+      const page_limit = process.env.PAGE_LIMIT
+      const total_company = await companySchema.countDocuments();
+      const page_total = Math.ceil(total_company / page_limit)
+      if (page == undefined) {
+        return companySchema.find({ isDelete: false }).limit(page_limit)
+          .then(async (rel) => {
+            for (let i = 0; i < rel.length; i++) {
+              rel[i] = rel[i].toObject();
+              var numJob = await jobSchema.find({ idCompany: mongoose.Types.ObjectId(rel[i]._id) })
+              rel[i]['numJob'] = numJob.length
+            }
+            resolve({ data: rel, total_page: page_total, current_page: 0, page_limit: Number.parseInt(page_limit) })
+          })
+          .catch((err) => { reject(err) })
+      }
+      page = Number.parseInt(page);
+      if (page >= 0 && page <= page_total) {
+        return companySchema.find({ isDelete: false })
+          .skip(page * page_limit)
+          .limit(page_limit)
+          .then(async (rel) => {
+            for (let i = 0; i < rel.length; i++) {
+              rel[i] = rel[i].toObject();
+              var numJob = await jobSchema.find({ idCompany: mongoose.Types.ObjectId(rel[i]._id) })
+              rel[i]['numJob'] = numJob.length
+            }
+            resolve({ data: rel, total_page: page_total, current_page: page, page_limit: Number.parseInt(page_limit) })
+          })
+          .catch((err) => { reject(err) })
+      }
+      else reject({ message: "can't not get list company" })
     })
   }
   getPaging = (page) => {
@@ -84,7 +109,10 @@ module.exports = class Job {
   readOne = (id) => {
     return new Promise((resolve, reject) => {
       return companySchema.findById(id)
-        .then((rel) => { resolve(rel) })
+        .then((rel) => {
+          if (rel.isDelete) reject({ message: "this company is deleted" })
+          else resolve(rel);
+        })
         .catch((err) => { reject(err) })
     })
   }
