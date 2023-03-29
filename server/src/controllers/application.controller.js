@@ -41,9 +41,10 @@ module.exports = {
     //lấy tất cả những application của job cụ thể
     getAllByJobId: (req, res, next) => {
         const jobId = req.query.jobid
-        console.log(jobId)
+        const page = req.query.page
+        //console.log(jobId)
         new applicationModel()
-            .getAllByJobId(jobId)
+            .getAllByJobId(jobId, page)
             .then((rel) => res.status(200).json({ success: true, message: "get application success", data: rel }))
             .catch((err) => res.status(500).json({ success: false, message: "get application failed", error: err }))
     },
@@ -51,10 +52,11 @@ module.exports = {
         const token = req.header('Authorization')
         const decode = getUserIdFromJWTToken(token)
         if (decode.success) {
+            const page = req.query.page
             const userId = decode.message
             //console.log(jobId)
             new applicationModel()
-                .getAllByUserId(userId)
+                .getAllByUserId(userId, page)
                 .then((data) => res.status(200).json({ success: true, message: "get application success", data: data }))
                 .catch((err) => res.status(500).json({ success: false, message: "get application failed", error: err }))
         } else {

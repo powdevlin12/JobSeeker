@@ -35,11 +35,9 @@ module.exports.getOne = (req, res, next) => {
  *         description: OK
  */
 module.exports.getAll = (req, res, next) => {
-  console.log(req)
-  new Company(
-    undefined, undefined, undefined, undefined, undefined, undefined, undefined
-  )
-    .readAll()
+  var page = req.query.page
+  new Company()
+    .readAll(page)
     .then(rel => {
       res.status(200).json({ message: 'get all  company  success', success: true, data: rel })
     })
