@@ -3,6 +3,7 @@ const companySchema = require('../schemas/company.schema')
 const applicationSchema = require('../schemas/application.schema')
 const { default: mongoose } = require('mongoose')
 const { verifyToken, getUserIdFromJWTToken } = require('../middlewares')
+const { chuanhoadaucau } = require('../services/standardVietNamWork')
 module.exports = class Job {
   id
   #name
@@ -139,7 +140,9 @@ module.exports = class Job {
   }
   getSortByDate = () => {
     return new Promise((resolve, reject) => {
-      jobSchema.find({ deadline: { $gte: new Date() } }).sort({ postingDate: -1 })
+      jobSchema.find({ deadline: { $gte: new Date() }, status: true }).sort({ postingDate: -1 })
+        .populate('idOccupation')
+        .populate('idCompany')
         .then(rel => resolve(rel))
         .catch(err => reject(err))
     })
@@ -197,23 +200,37 @@ module.exports = class Job {
   // vua tim kiem vua nhan theo id
   findJob = (condition) => {
     return new Promise((resolve, reject) => {
-      jobSchema.find({ name: { $regex: condition.key.toString() }, deadline: { $gt: new Date() } })
+      jobSchema.find({ deadline: { $gt: new Date() }, status: true })
+        .populate('idOccupation')
+        .populate('idCompany')
         .then((rel) => {
           for (let i in condition) {
             switch (i) {
               case 'localWorking':
-                rel = rel.filter(item => item.locationWorking in condition[i])
+                rel = rel.filter(item => condition[i].includes(item.locationWorking))
                 break;
               case 'idCompany':
-                rel = rel.filter(item => item.idCompany == condition[i])
+                rel = rel.filter(item => condition[i].includes(item.idCompany))
                 break;
               case 'idOccupation':
-                rel = rel.filter(item => item.idOccupation in condition[i])
+                rel = rel.filter(item => condition[i].includes(item.idOccupation))
                 break;
               default:
                 break;
             }
           }
+          rel = rel.filter(i =>
+            (
+              i.idCompany != null && i.idOccupation != null
+            )
+            &&
+            (
+              chuanhoadaucau(i.name.toLowerCase()).includes(chuanhoadaucau(condition.key.toString().toLowerCase())) ||
+              chuanhoadaucau(i.idCompany.name.toLowerCase()).includes(chuanhoadaucau(condition.key.toString().toLowerCase())) ||
+              chuanhoadaucau(i.idOccupation.name.toLowerCase()).includes(chuanhoadaucau(condition.key.toString().toLowerCase())) ||
+              chuanhoadaucau(i.locationWorking.toLowerCase()).includes(chuanhoadaucau(condition.key.toString().toLowerCase()))
+            )
+          );
           resolve(rel);
         })
         .catch((err) => reject(err))

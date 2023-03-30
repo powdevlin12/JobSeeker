@@ -76,9 +76,7 @@ module.exports.updateOne = (req, res, next) => {
 }
 
 module.exports.getAllSortByDate = (req, res, next) => {
-  new Job(
-    undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
-  )
+  new Job()
     .getSortByDate()
     .then(rel => {
       res.status(200).json({ message: 'get all job success', success: true, data: rel })

@@ -62,3 +62,15 @@ Content-Type: application/json
     "localWorking" : ["Hà Nội"],
     "idCompany" : "",
 }
+
+
+POST {{urlDev}}/job/search
+Content-Type: application/json
+
+{
+    "key" : "",
+    "idOccupation" : ["64100616fdd527b2f096944a"],
+    "localWorking" : ["Hà Nội"],
+    "idCompany" : "",
+}
+

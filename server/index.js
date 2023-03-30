@@ -20,7 +20,8 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 // swagger
 const swaggerJsdoc = require("swagger-jsdoc")
-const swaggerUi = require("swagger-ui-express")
+const swaggerUi = require("swagger-ui-express");
+const { chuanhoadaucau } = require('./src/services/standardVietNamWork');
 
 const options = {
   definition: {
