@@ -95,7 +95,7 @@ module.exports.getFilterJob = (req, res, next) => {
 //Tim kiem viec lam
 module.exports.getSearchJob = (req, res, next) => {
   const condition = req.body
-  //console.log(key)
+  console.log(condition)
   new Job()
     .findJob(condition)
     .then((rel) => { return res.status(200).json({ success: true, message: "search job success", data: rel }) })
