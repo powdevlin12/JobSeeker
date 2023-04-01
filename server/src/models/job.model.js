@@ -199,21 +199,28 @@ module.exports = class Job {
   }
   // vua tim kiem vua nhan theo id
   findJob = (condition) => {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       jobSchema.find({ deadline: { $gt: new Date() }, status: true })
         .populate('idOccupation')
         .populate('idCompany')
         .then((rel) => {
           for (let i in condition) {
             switch (i) {
-              case 'localWorking':
-                rel = rel.filter(item => condition[i].includes(item.locationWorking))
+              case 'locationWorking':
+                if (condition[i].length > 0) {
+                  for (let tmp = 0; tmp < condition[i].length; tmp++) condition[i][tmp] = chuanhoadaucau(condition[i][tmp]).toLowerCase();
+                  rel = rel.filter(item => condition[i].includes(chuanhoadaucau(item.locationWorking).toLowerCase()))
+                }
                 break;
               case 'idCompany':
-                rel = rel.filter(item => condition[i].includes(item.idCompany))
+                if (condition[i].length > 0) {
+                  rel = rel.filter(item => condition[i].includes(item.idCompany._id.toString()))
+                }
                 break;
               case 'idOccupation':
-                rel = rel.filter(item => condition[i].includes(item.idOccupation))
+                if (condition[i].length > 0) {
+                  rel = rel.filter(item => condition[i].includes(item.idOccupation._id.toString()))
+                }
                 break;
               default:
                 break;
