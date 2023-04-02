@@ -86,9 +86,10 @@ module.exports.getAllSortByDate = (req, res, next) => {
 
 
 // loc job  NGUOI TIM VIEC
-module.exports.getFilterJob = (req, res, next) => {
+module.exports.getSearchByKey = (req, res, next) => {
+  console.log(req.query.keyword)
   new Job()
-    .filterJob(req.body)
+    .searchByKey(req.query.keyword)
     .then((rel) => { return res.status(200).json({ success: true, message: "filter job success", data: rel }) })
     .catch(err => res.status(404).json({ message: "filter job fail", success: false, error: err }))
 }

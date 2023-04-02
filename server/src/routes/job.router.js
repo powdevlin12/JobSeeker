@@ -16,10 +16,14 @@ module.exports = require('express').Router()
   //update job
   .put("/update", verifyTokenIsAdmin, jobController.updateOne)
   // lọc job theo idOccupation, idCompany, Sắp xếp, ...
-  .post("/list/filter", jobController.getFilterJob)
+  .get("/search-by-key", jobController.getSearchByKey)
   //Lấy danh sách tất cả công việc đã đăng của 1 công ty
   .get("/list/all-moderator-job", verifyTokenIsAdmin, jobController.getAllJobModerator)
   .post("/list/search", jobController.getSearchJob)
   .get("/list/company/:id", jobController.listJobByCompany)
 
   .post("/upload/image", upload.Image.single('fileUpload'), jobController.uploadImage)
+  .post("/test-post-api", (req, res) => {
+    res.send(`test post methos success, body: ${req.body}.
+              header : ${req.headers}`)
+  })
