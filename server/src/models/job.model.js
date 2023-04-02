@@ -4,6 +4,7 @@ const applicationSchema = require('../schemas/application.schema')
 const { default: mongoose } = require('mongoose')
 const { verifyToken, getUserIdFromJWTToken } = require('../middlewares')
 const { chuanhoadaucau } = require('../services/standardVietNamWork')
+const occupationSchema = require('../schemas/occupation.schema')
 module.exports = class Job {
   id
   #name
@@ -31,6 +32,10 @@ module.exports = class Job {
   }
   create = () => {
     return new Promise(async (resolve, reject) => {
+      const company = await companySchema.findById(this.#idCompany)
+      const occupation = await occupationSchema.findById(this.#idOccupation)
+      if (company.isDelete || company == null) reject({ message: "company is undefined" })
+      if (occupation == null || occupation.isDelete) reject({ message: "Occupattion is undefined" })
       const job = new jobSchema()
       job.name = this.#name
       job.description = this.#description
@@ -148,35 +153,28 @@ module.exports = class Job {
     })
   }
   //lọc job theo các tiêu chí sắp xếp mới nhất, tìm theo locationWorking, idCompany, idOccupation
-  filterJob = (condition) => {
+  searchByKey = (key) => {
     return new Promise((resolve, reject) => {
       jobSchema.find({ status: true, deadline: { $gt: new Date() } }).sort({ postingDate: -1 })
         .populate('idOccupation')
         .populate('idCompany')
         .then(
           rel => {
-            //console.log(rel)
-            for (let i in condition) {
-              //console.log(i)
-              switch (i) {
-                case 'locationWorking':
-                  //console.log(condition[i])
-                  rel = rel.filter(item => condition[i].includes(item.locationWorking))
-                  //return item.locationWorking.some(place => condition[i].includes(place.toString())))
-                  break;
-                case 'idCompany':
-                  //console.log(condition[i])
-                  rel = rel.filter(item => condition[i].includes(item.idCompany._id.toString()))
-                  break;
-                case 'idOccupation':
-                  //console.log(condition[i])
-                  rel = rel.filter(item => condition[i].includes(item.idOccupation._id.toString()))
-                  // return item.idOccupation.some(occupation => condition[i].includes(occupation.toString()))
-                  break;
-                default:
-                  break;
-              }
-            }
+            rel = rel.filter(item =>
+            (
+              (
+                item.idCompany != null && item.idOccupation != null
+              ) &&
+              (chuanhoadaucau(item.name).toLowerCase().includes(chuanhoadaucau(key).toLowerCase()) ||
+                chuanhoadaucau(item.requirement).toLowerCase().includes(chuanhoadaucau(key).toLowerCase() ||
+                  chuanhoadaucau(item.idCompany.name).toLowerCase().includes(chuanhoadaucau(key).toLowerCase()) ||
+                  chuanhoadaucau(item.idOccupation.name).toLowerCase().includes(chuanhoadaucau(key).toLowerCase()))
+              )
+            )
+            )
+            rel = rel.map(function (item) {
+              return { _id: item._id, name: item.name }
+            })
             return resolve(rel)
           }
         )

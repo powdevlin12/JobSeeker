@@ -1,16 +1,20 @@
+const { Mongoose, default: mongoose } = require('mongoose')
 const occupationSchema = require('../schemas/occupation.schema')
 
 module.exports = class Job {
   id
   #name
-  constructor(id, name) {
+  #isDelete
+  constructor(id, name, isDelete) {
     this.id = id
     this.#name = name
+    this.#isDelete = isDelete
   }
   create = () => {
     return new Promise(async (resolve, reject) => {
       const occup = new occupationSchema()
       occup.name = this.#name
+      occup.isDelete = false
       occup.save()
         .then((rel) => resolve(rel))
         .catch((err) => { reject(err) })
@@ -18,9 +22,9 @@ module.exports = class Job {
   }
   delete = (id) => {
     return new Promise(async (resolve, reject) => {
-      occupationSchema.findByIdAndDelete(id)
-        .then((rel) => resolve(rel))
-        .catch((rel) => reject(rel))
+      occupationSchema.updateOne({ _id: mongoose.Types.ObjectId(id) }, { isDelete: true })
+        .then((rel) => { resolve(rel) })
+        .catch((err) => { reject(err) })
     })
   }
   readAll = (page) => {
