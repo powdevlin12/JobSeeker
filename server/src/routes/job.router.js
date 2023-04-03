@@ -4,6 +4,7 @@ const { upload } = require('../services/uploadImage.service')
 
 module.exports = require('express').Router()
   //lấy ra tất cả job hiện có
+  //lấy ra tất cả job hiện có
   .get("/list", jobController.readAll)
   //
   .get("/list/sort-by-date", jobController.getAllSortByDate)
@@ -24,6 +25,6 @@ module.exports = require('express').Router()
 
   .post("/upload/image", upload.Image.single('fileUpload'), jobController.uploadImage)
   .post("/test-post-api", (req, res) => {
-    res.send(`test post methos success, body: ${req.body}.
-              header : ${req.headers}`)
+    res.send(`test post methos success, body: ${JSON.stringify(req.body)}.
+            header : ${JSON.stringify(req.headers)}`)
   })
