@@ -4,3 +4,4 @@ module.exports = api => api
   .use('/company', require('./company.router'))
   .use('/occupation', require('./occupation.router'))
   .use('/application', require('./application.router'))
+  .use('/statistical', require('./statistical.route'))
