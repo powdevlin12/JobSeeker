@@ -216,6 +216,7 @@ module.exports = class Job {
             )
           );
           for (let i in condition) {
+            if (i.idCompany == null || i.idOccupation == null) { continue; }
             switch (i) {
               case 'locationWorking':
                 if (condition[i].length > 0) {
