@@ -2,6 +2,7 @@ const UserSchema = require('../schemas/user.schema')
 var jwt = require('jsonwebtoken');
 const { genaralAccessToken, genaralRefreshToken } = require('../utils');
 const { SendMailText } = require('../services/sendmail.service');
+const companySchema = require('../schemas/company.schema');
 module.exports = class User {
   #id
   #avatar
@@ -221,8 +222,13 @@ module.exports = class User {
   getUser = () => new Promise(async(resolve, reject) => {
     try {
       const res = await UserSchema.findOne({_id : this.#id})
-      console.log(res)
-      resolve(res)
+      let company = []
+      if (res) {
+        company = await companySchema.find({idUser : this.#id})
+      }
+      let result = {...res._doc, company : company ? company[0] : {}}
+      console.log(result)
+      resolve(result)
     } catch (error) {
       console.log(err)
       reject(err)
