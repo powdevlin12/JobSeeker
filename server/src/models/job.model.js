@@ -202,6 +202,19 @@ module.exports = class Job {
         .populate('idOccupation')
         .populate('idCompany')
         .then((rel) => {
+          rel = rel.filter(i =>
+            (
+              i.idCompany != null && i.idOccupation != null
+            )
+            &&
+            (
+              chuanhoadaucau(i.name.toLowerCase()).includes(chuanhoadaucau(condition.key.toString().toLowerCase())) ||
+              chuanhoadaucau(i.idCompany.name.toLowerCase()).includes(chuanhoadaucau(condition.key.toString().toLowerCase())) ||
+              chuanhoadaucau(i.idOccupation.name.toLowerCase()).includes(chuanhoadaucau(condition.key.toString().toLowerCase())) ||
+              chuanhoadaucau(i.locationWorking.toLowerCase()).includes(chuanhoadaucau(condition.key.toString().toLowerCase())) ||
+              chuanhoadaucau(i.requirement.toLowerCase()).includes(chuanhoadaucau(condition.key.toString().toLowerCase()))
+            )
+          );
           for (let i in condition) {
             if (i.idCompany == null || i.idOccupation == null) { continue; }
             switch (i) {
@@ -225,18 +238,6 @@ module.exports = class Job {
                 break;
             }
           }
-          rel = rel.filter(i =>
-            (
-              i.idCompany != null && i.idOccupation != null
-            )
-            &&
-            (
-              chuanhoadaucau(i.name.toLowerCase()).includes(chuanhoadaucau(condition.key.toString().toLowerCase())) ||
-              chuanhoadaucau(i.idCompany.name.toLowerCase()).includes(chuanhoadaucau(condition.key.toString().toLowerCase())) ||
-              chuanhoadaucau(i.idOccupation.name.toLowerCase()).includes(chuanhoadaucau(condition.key.toString().toLowerCase())) ||
-              chuanhoadaucau(i.locationWorking.toLowerCase()).includes(chuanhoadaucau(condition.key.toString().toLowerCase()))
-            )
-          );
           resolve(rel);
         })
         .catch((err) => reject(err))
