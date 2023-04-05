@@ -63,6 +63,9 @@ module.exports = class User {
 
   login = () => new Promise(async (resolve, reject) => {
     new Promise((resolve, reject) => {
+      if (this.#username === '' || this.#password === '') {
+        return reject({message : 'not empty username or password'})
+      }
       UserSchema
         .findOne({ username: this.#username })
         .then(user => resolve(user))
