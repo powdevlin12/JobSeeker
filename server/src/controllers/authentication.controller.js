@@ -216,7 +216,7 @@ module.exports.editProfile = (req, res, next) => {
   const { name, email, phone } = req.body
   const file = req.file
   console.log(file)
-  // console.log(name, email, phone)
+  console.log(name, email, phone)
   new User(
     _id,
     file.filename,

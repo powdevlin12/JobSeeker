@@ -241,15 +241,16 @@ module.exports = class User {
   patchUser = () => new Promise(async(resolve, reject) => {
     try {
       if (this.#email) {
-        const checkEmail = await UserSchema.findOne({email : this.#email})
+        const checkEmail = await UserSchema.findOne({$and : [{email : this.#email}, {_id : {$ne : this.#id}}]})
         
         if (checkEmail) {
           return reject({message : "Cập nhật thất bại, email này đã tồn tại trong hệ thống !", isSuccess : false})
         }
       }
 
+      console.log(this);
       if (this.#phone) {
-        const checkPhone = await UserSchema.findOne({phone : this.#phone})
+        const checkPhone = await UserSchema.findOne({$and : [{phone : this.#phone}, {_id : {$ne : this.#id}}]})
       
         if (checkPhone) {
           return reject({message : "Cập nhật thất bại, số điện thoại này đã tồn tại trong hệ thống !", isSuccess : false})
