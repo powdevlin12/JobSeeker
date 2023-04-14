@@ -66,8 +66,9 @@ module.exports = class User {
       if (this.#username === '' || this.#password === '') {
         return reject({message : 'not empty username or password'})
       }
+      console.log(this.#email);
       UserSchema
-        .findOne({ username: this.#username })
+        .findOne({ $or : [{username: this.#username}, {email : this.#email}] })
         .then(user => resolve(user))
         .catch(err => reject(err))
     }).then(async user => {
@@ -169,10 +170,9 @@ module.exports = class User {
 
   forgotPassword = () => new Promise(async (resolve, reject) => {
     try {
-      const user = await UserSchema.findOne({$or : [
-        {email : this.#email},
-        {phone : this.#phone}
-      ]})
+      const user = await UserSchema.findOne(
+        {email : this.#email}
+      )
       
       if (user) {
         const confirmPasswordCode = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000; 
