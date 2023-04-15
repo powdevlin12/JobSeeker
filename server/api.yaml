@@ -1,0 +1,230 @@
+openapi: 3.0.0
+info:
+  title: JobSeeker API
+  description: Dat Ngoc Ngan Ba Nghia.
+  version: 0.1.9
+servers:
+  - url: http://localhost:8000
+    description: My local server.
+  - url: http://staging-api.example.com
+    description: Server is deloyed.
+tags:
+  - name: Auth 
+    description: Authentication and authorization.
+paths:
+  /auth/info-user: 
+      get:
+        tags:
+          - Auth
+        summary: Get User
+        responses:
+          '200':
+            description: 'Get Successfully.'
+          '500':
+            description: 'Get user false !!!'
+        security:
+        - Bearer: string
+  /auth/login: 
+    post:
+      tags:
+        - Auth
+      summary: Login
+      requestBody:
+        description: Login by email
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Auth'
+        required: true
+      responses:
+        '200':
+          description: 'Login Successfully.'
+        '401':
+          description: 'Invalid email address or phone number!'
+  /auth/register:
+    post:
+      tags:
+        - Auth
+      summary: Register
+      requestBody:
+        description: Create user
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRegister'
+        required: true
+      responses:
+        '200':
+          description: 'Login Successfully.'
+        '401':
+          description: 'Invalid email address or phone number!'
+  /auth/forgot-password:
+    post:
+      tags:
+        - Auth
+      summary: Recovery password
+      requestBody:
+        description: reset password by email
+        content:
+          application/json:
+            schema:
+              properties:
+                email:
+                  type: string
+                  example : 'thudatdl123@gmail.com'
+        required: true
+      responses:
+        '200':
+          description: 'Send mail successfully.'
+        '500':
+          description: 'Send mail false !!!'
+  /auth/confirm-password:
+    put:
+      tags:
+        - Auth
+      summary: set new password
+      requestBody:
+        description: set new password
+        content:
+          application/json:
+            schema:
+              properties:
+                email:
+                  type: string
+                  example : 'thudatdl123@gmail.com'
+                newPassword:
+                  type: string
+                  example : 'ThudatDepTrai123'
+                confirmPasswordCode:
+                  type: string
+        required: true
+      responses:
+        '200':
+          description: 'Set new password successfully.'
+        '500':
+          description: 'Set new password false!!!'
+  /auth/refresh-token:
+    post:
+      tags:
+        - Auth
+      summary: create new refresh token
+      requestBody:
+        description: create new refresh token
+        content:
+          application/json:
+            schema:
+              properties:
+                _id:
+                  type: string
+                role:
+                  type: string
+                  example : 'user'
+        required: true
+      responses:
+        '200':
+          description: 'create new refresh token successfully.'
+        '500':
+          description: 'create new refresh token false!!!'
+      security:
+        - Bearer: string
+  /auth/change-password:
+    put:
+      tags:
+        - Auth
+      summary: change password
+      requestBody:
+        description: change password
+        content:
+          application/json:
+            schema:
+              properties:
+                password:
+                  type: string
+                  example : 'thudatdz123'
+                newPassword:
+                  type: string
+                  example : 'thudatdz123'
+        required: true
+      responses:
+        '200':
+          description: 'change password successfully.'
+        '500':
+          description: 'change password false!!!'
+      security:
+        - Bearer: string
+  /auth/edit-profile:
+    patch:
+      tags:
+        - Auth
+      summary: patch profile
+      requestBody:
+        description: patch profile
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                name:
+                  type: string
+                  example : 'TRAN THU DAT'
+                phone:
+                  type: string
+                  example : '0941374589'
+                email:
+                  type: string
+                  example: thudatdl123@gmail.com
+        required: true
+      responses:
+        '200':
+          description: 'patch profile successfully.'
+        '500':
+          description: 'patch profiled false!!!'
+      security:
+        - Bearer: string
+components:
+  schemas:
+    Auth:
+      type: object
+      properties:
+        username:
+          type: string
+          example: thudatdl123@gmail.com
+        password:
+          type: string
+          example: Thudat123@
+    AuthRegister:
+      type: object
+      required:
+        - username
+        - password
+        - name
+        - phone
+        - email
+        - username
+      properties:
+        username:
+          type: string
+          example: 'thudatdl123@gmail.com'
+        password:
+          type: string
+          example: Thudat123@
+        name:
+          type: string
+          example: Tran Dat
+        phone:
+          type: string
+          example : '0941374589'
+        email:
+          type: string
+        role: 
+          type: string
+          example: user
+          enum:
+            - user
+            - admin
+      securitySchemes:
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      name: Authorization
+      in: header 
+        

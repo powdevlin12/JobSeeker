@@ -21,18 +21,18 @@ module.exports.create = (req, res, next) => {
   )
     .create()
     .then(user => {
-      console.log('thanh cong!')
       res.status(200).json({ message: 'Đăng kí thành công !', success: true, data: user })
     })
-    .catch(err => res.status(501).json({ message: err.message, success: err.isSuccess }))
+    .catch(err => res.status(401).json({ message: err.message, success: err.isSuccess }))
 }
 
 module.exports.login = (req, res, next) => {
   const { username, password } = req.body;
+  console.log(username, password);
   new User(undefined
     , undefined
     , undefined
-    , undefined
+    , username
     , undefined
     , username
     , password
@@ -43,7 +43,7 @@ module.exports.login = (req, res, next) => {
     .then(result => {
       res.status(200).json({ message: 'Đăng nhập thành công !', success: true, data: result })
     })
-    .catch(err => res.status(500).json({ message: err.message, success: err.isSuccess }))
+    .catch(err => res.status(401).json({ message: err.message, success: err.isSuccess }))
 }
 
 module.exports.logOut = (req, res, next) => {
@@ -122,13 +122,13 @@ module.exports.changePasswordController = (req, res, next) => {
 }
 
 module.exports.forgotPassword = (req, res, next) => {
-  const { input } = req.body;
+  const { email } = req.body;
   new User(
     undefined,
     undefined,
     undefined,
-    input,
-    input,
+    email,
+    undefined,
     undefined,
     undefined,
     undefined,
@@ -216,7 +216,7 @@ module.exports.editProfile = (req, res, next) => {
   const { name, email, phone } = req.body
   const file = req.file
   console.log(file)
-  // console.log(name, email, phone)
+  console.log(name, email, phone)
   new User(
     _id,
     file.filename,

@@ -4,6 +4,8 @@ const port = process.env.PORT || 8000
 const path = require("path")
 const dotenv = require('dotenv');
 const cors = require('cors')
+const YAML = require('yamljs');
+const swaggerUI = require('swagger-ui-express');
 // env
 dotenv.config();
 app.use(cors());
@@ -18,31 +20,11 @@ app.use(bodyParser.urlencoded({ extended: false }))
 
 // parse application/json
 app.use(bodyParser.json())
+
 // swagger
-const swaggerJsdoc = require("swagger-jsdoc")
-const swaggerUi = require("swagger-ui-express");
-const { chuanhoadaucau } = require('./src/services/standardVietNamWork');
+const swaggerJsDocs = YAML.load('./api.yaml');
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerJsDocs));
 
-const options = {
-  definition: {
-    openapi: "3.0.0",
-    info: {
-      title: "Job Seeker",
-      version: "1.0.0",
-      description: "Dat Ngoc Ba Ngan Nghia"
-    },
-    servers: [
-      {
-        url: 'http://localhost:8000'
-      }
-    ],
-  },
-  apis: ["./src/controllers/*.js"]
-}
-
-const specs = swaggerJsdoc(options)
-
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs))
 
 // parse application/json
 app.use(bodyParser.json())
