@@ -28,3 +28,8 @@ module.exports = require('express').Router()
     res.send(`test post methos success, body: ${JSON.stringify(req.body)}.
             header : ${JSON.stringify(req.headers)}`)
   })
+  .get("/statistical/job-by-occupation", jobController.listJobByOccupatiton)
+  .get("/statistical/list-new-job", jobController.listNewJob)
+  .get("/statistical/custom-statistical", jobController.customStatistical)
+  .get("/statistical/application-by-occupation", jobController.applicationByOccupation)
+  .get("/statistical/most-application-job", jobController.mostApplicationJob)

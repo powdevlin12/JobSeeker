@@ -24,6 +24,11 @@ const jobSchema = new mongoose.Schema({
     require: true,
     default: new Date()
   },
+  updateDate: {
+    type: Date,
+    require: true,
+    default: new Date()
+  },
   deadline: {
     type: Date,
     require: true,

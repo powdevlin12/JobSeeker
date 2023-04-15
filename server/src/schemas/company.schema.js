@@ -31,6 +31,11 @@ const companySchema = new mongoose.Schema({
     default: false
   }
   ,
+  createDate: {
+    type: Date,
+    require: true
+  }
+  ,
   idUser: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",

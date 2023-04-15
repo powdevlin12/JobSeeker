@@ -5,6 +5,7 @@ const applicationSchema = require('../schemas/application.schema')
 const { upload } = require('../services/uploadImage.service')
 module.exports = {
     create: (req, res, next) => {
+        console.log(req.file)
         const rel = getUserIdFromJWTToken(req.header('Authorization'))
         if (rel.success) {
             const idJobSeeker = rel.message

@@ -5,6 +5,8 @@ const { default: mongoose } = require('mongoose')
 const { verifyToken, getUserIdFromJWTToken } = require('../middlewares')
 const { chuanhoadaucau } = require('../services/standardVietNamWork')
 const occupationSchema = require('../schemas/occupation.schema')
+const { populate } = require('../schemas/user.schema')
+const { Mongoose } = require('mongoose')
 module.exports = class Job {
   id
   #name
@@ -12,6 +14,7 @@ module.exports = class Job {
   #requirement
   #hourWorking
   #postingDate
+  #updateDate
   #deadline
   #salary
   #locationWorking
@@ -24,6 +27,7 @@ module.exports = class Job {
     this.#requirement = requirement
     this.#hourWorking = hourworking
     this.#postingDate = postingdate
+    this.#updateDate = new Date()
     this.#deadline = deadline
     this.#salary = salary
     this.#locationWorking = locationworking
@@ -32,24 +36,30 @@ module.exports = class Job {
   }
   create = () => {
     return new Promise(async (resolve, reject) => {
-      const company = await companySchema.findById(this.#idCompany)
-      const occupation = await occupationSchema.findById(this.#idOccupation)
-      if (company.isDelete || company == null) reject({ message: "company is undefined" })
-      if (occupation == null || occupation.isDelete) reject({ message: "Occupattion is undefined" })
-      const job = new jobSchema()
-      job.name = this.#name
-      job.description = this.#description
-      job.requirement = this.#requirement
-      job.hourWorking = this.#hourWorking
-      job.postingDate = this.#postingDate
-      job.deadline = this.#deadline
-      job.salary = this.#salary
-      job.locationWorking = this.#locationWorking
-      job.idOccupation = this.#idOccupation
-      job.idCompany = this.#idCompany
-      job.save()
-        .then((rel) => resolve(rel))
-        .catch((err) => { reject(err) })
+      try {
+        const company = await companySchema.findById(this.#idCompany)
+        const occupation = await occupationSchema.findById(this.#idOccupation)
+        console.log(company, occupation)
+        if (company == null || company.isDelete) reject({ message: "company is undefined" })
+        if (occupation == null || occupation.isDelete) reject({ message: "Occupattion is undefined" })
+        const job = new jobSchema()
+        job.name = this.#name
+        job.description = this.#description
+        job.requirement = this.#requirement
+        job.hourWorking = this.#hourWorking
+        job.postingDate = this.#postingDate
+        job.deadline = this.#deadline
+        job.salary = this.#salary
+        job.locationWorking = this.#locationWorking
+        job.updateDate = new Date()
+        job.idOccupation = this.#idOccupation
+        job.idCompany = this.#idCompany
+        job.save()
+          .then((rel) => resolve(rel))
+          .catch((err) => { reject(err) })
+      } catch (error) {
+        reject({ message: "a undefined exception: " + error.message })
+      }
     })
   }
   delete = (id) => {
@@ -68,7 +78,7 @@ module.exports = class Job {
       }
     })
   }
-  readAll = (page) => {
+  getAll = (page) => {
     return new Promise(async (resolve, reject) => {
       const page_limit = process.env.PAGE_LIMIT
       const total_job = await jobSchema.countDocuments()
@@ -105,9 +115,16 @@ module.exports = class Job {
               job = job.toObject()
               var numApply = await applicationSchema.find({ idJob: mongoose.Types.ObjectId(job._id) })
               var isApply = await applicationSchema.find({ idJob: mongoose.Types.ObjectId(job._id), idJobSeeker: mongoose.Types.ObjectId(userId.message) })
+              var relatedJob = await jobSchema.find({
+                $and: [
+                  { deadline: { $gte: new Date() }, status: true },
+                  { $or: [{ idCompany: mongoose.Schema.Types.ObjectId(job.idCompany._id) }, { requirement: job.requirement }] }
+                ]
+              }).limit(3).toObject();
               if (isApply.length > 0) job.isApply = true;
               else job.isApply = false;
               job['numApply'] = numApply.length;
+              job['relatedJob'] = relatedJob
               //console.log('job: ' + job)
               return resolve(job)
             })
@@ -121,8 +138,17 @@ module.exports = class Job {
           //console.log('job ' + job);
           .then(async (job) => {
             var numApply = await applicationSchema.find({ idJob: mongoose.Types.ObjectId(job._id) })
+            var relatedJob = await jobSchema.find({
+              $and: [
+                { deadline: { $gte: new Date() }, status: true },
+                { $or: [{ idCompany: mongoose.Schema.Types.ObjectId(job.idCompany._id) }, { requirement: job.requirement }] }
+              ]
+            }).limit(3).toObject();
+            console.log(relatedJob)
             job = job.toObject()
             job['numApply'] = numApply.length;
+            job['isApply'] = false
+            job['relatedJob'] = relatedJob
             //console.log('job: ' + job)
             return resolve(job)
           })
@@ -132,15 +158,18 @@ module.exports = class Job {
   }
   update = (job) => {
     return new Promise(async (resolve, reject) => {
-      var jobFind = await jobSchema.findById(job._id);
-      if (!jobFind.status) {
-        reject({ message: "this job was deleted. Can't update." })
-      } else {
-        jobSchema.findByIdAndUpdate(job._id, job)
-          .then(rel => resolve(job))
-          .catch(err => reject(err))
+      try {
+        var jobFind = await jobSchema.findById(job._id);
+        if (!jobFind.status) {
+          reject({ message: "this job was deleted. Can't update." })
+        } else {
+          jobSchema.findByIdAndUpdate(job._id, job)
+            .then(rel => resolve(job))
+            .catch(err => reject(err))
+        }
+      } catch (error) {
+        reject("exception when update company: " + error.message)
       }
-
     })
   }
   getSortByDate = () => {
@@ -173,12 +202,13 @@ module.exports = class Job {
             )
             )
             rel = rel.map(function (item) {
-              return { _id: item._id, name: item.name }
+              return item.name
             })
+            rel = Array.from(new Set(rel));
             return resolve(rel)
           }
         )
-        .catch(err => reject(err))
+        .catch(err => reject({ message: err }))
     })
   }
   //xem tất cả job đã đăng(dành cho ng tuyển dụng)
@@ -251,5 +281,127 @@ module.exports = class Job {
         .then((data) => resolve(data))
         .catch((err) => reject(err));
     });
+  }
+  //thông tin thống kê, biểu đồ
+  statisticalJobByOccupation = (top) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await occupationSchema.updateMany({ isDelete: false })
+        var availableCompanies = await companySchema.find({ isDelete: false })
+        availableCompanies = availableCompanies.map(i => i._id.toString())
+        var availableOccupation = await occupationSchema.find({ isDelete: false })
+        var availableOccupationId = availableOccupation.map(i => i._id.toString())
+        var sumJob = await jobSchema.find({ status: true, deadline: { $gt: new Date() }, idCompany: { $in: availableCompanies }, idOccupation: { $in: availableOccupationId } })
+        var result = {}
+        availableOccupation.forEach(item => {
+          result[`${item.name}`] = sumJob.filter(i => i.idOccupation == item._id.toString()).length;
+        })
+        resolve(result);
+      } catch (error) {
+        reject(error)
+      }
+    })
+    //count so luong cv moi nganh
+    // group by
+  }
+  // thong ke ung tuyen theo nganh
+  statisticalApplicationByOccupation = (top) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        var applies = await applicationSchema.find({})
+          .populate('idJob')
+        applies = applies.filter(i => i.idJob != null)
+        //console.log(applies)
+        var availableCompanies = await companySchema.find({ isDelete: false })
+        availableCompanies = availableCompanies.map(i => i._id.toString())
+        var availableOccupation = await occupationSchema.find({ isDelete: false })
+        var availableOccupationId = availableOccupation.map(i => i._id.toString())
+        var result = []
+        for (let i of availableOccupation) {
+          result.push({
+            name: i.name,
+            count: applies.filter(item => item.idJob.idOccupation.toString() == i._id.toString()).length
+          })
+        }
+        resolve(result)
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
+  statisticalNewCreateJob = (type) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await companySchema.updateMany({ createDate: new Date })
+        var result = [];
+        var delCom = await companySchema.find({ isDelete: false })
+        delCom = delCom.map(i => i._id)
+        var delOcc = await occupationSchema.find({ isDelete: false })
+        delOcc = delOcc.map(i => i._id)
+        var totalJob = await jobSchema.find({ status: true, deadline: { $gt: new Date() }, idCompany: { $in: delCom }, idOccupation: { $in: delOcc } })
+        console.log(totalJob)
+        switch (type) {
+          case 'month':
+            for (let i = 0; i < 12; i++) {
+              var tmp = totalJob.filter(item => new Date(item.postingDate).getMonth() == i).length
+              result[i] = tmp
+            }
+            break;
+          default:
+            break;
+        }
+        resolve(result)
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
+
+  dailyStatiistical = (type) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        var currentDate = new Date().toISOString();
+        var lastDate = new Date(new Date() - 86400000)
+        var newApplies = await applicationSchema.find({ submitDate: { $lte: currentDate, $gte: lastDate } }).countDocuments();
+        var newJobs = await jobSchema.find({ postingDate: { $lte: currentDate, $gte: lastDate } }).countDocuments()
+        var newCompanies = await companySchema.find({ createDate: { $lte: currentDate, $gte: lastDate } }).countDocuments()
+        var totalJob = await jobSchema.find({ status: true }).countDocuments()
+        var result = {
+          newApplies: newApplies,
+          newJobs: newJobs,
+          newCompanies: newCompanies,
+          totalJob: totalJob
+        }
+        console.log(result)
+        resolve(result)
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
+  mostApplicationJob = (type) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await companySchema.updateMany({ createDate: new Date })
+        var result = [];
+        var delCom = await companySchema.find({ isDelete: false })
+        delCom = delCom.map(i => i._id)
+        var delOcc = await occupationSchema.find({ isDelete: false })
+        delOcc = delOcc.map(i => i._id)
+        var totalJob = await jobSchema.find({ status: true, idCompany: { $in: delCom }, idOccupation: { $in: delOcc } })
+        var applies = await applicationSchema.find({}).populate('idJob')
+        applies = applies.filter(i => i.idJob != null)
+        for (let j of totalJob) {
+          result.push({
+            name: j.name,
+            count: applies.filter(a => a.idJob._id.toString() == j._id.toString()).length
+          })
+        }
+        result = result.sort((a, b) => b.count - a.count)
+        resolve(result)
+      } catch (error) {
+        reject(error)
+      }
+    })
   }
 }
