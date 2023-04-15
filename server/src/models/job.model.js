@@ -54,6 +54,7 @@ module.exports = class Job {
         job.updateDate = new Date()
         job.idOccupation = this.#idOccupation
         job.idCompany = this.#idCompany
+        job.status = true
         job.save()
           .then((rel) => resolve(rel))
           .catch((err) => { reject(err) })
@@ -91,8 +92,8 @@ module.exports = class Job {
           .catch((err) => { reject(err) })
       }
       page = Number.parseInt(page)
-      if (page >= 0 && page <= page_total) {
-        return jobSchema.find({}).skip(page).limit(page_limit)
+      if (page >= 0 && page < page_total) {
+        return jobSchema.find({}).skip(page * page_limit).limit(page_limit)
           .populate('idCompany')
           .populate('idOccupation')
           .then((job) => { return resolve({ data: job, page_total: page_total, current_page: page, job_per_page: Number.parseInt(page_limit) }) })
@@ -116,11 +117,9 @@ module.exports = class Job {
               var numApply = await applicationSchema.find({ idJob: mongoose.Types.ObjectId(job._id) })
               var isApply = await applicationSchema.find({ idJob: mongoose.Types.ObjectId(job._id), idJobSeeker: mongoose.Types.ObjectId(userId.message) })
               var relatedJob = await jobSchema.find({
-                $and: [
-                  { deadline: { $gte: new Date() }, status: true },
-                  { $or: [{ idCompany: mongoose.Schema.Types.ObjectId(job.idCompany._id) }, { requirement: job.requirement }] }
-                ]
-              }).limit(3).toObject();
+                deadline: { $gte: new Date() }, status: true, $or: [{ idCompany: job.idCompany._id }, { requirement: job.requirement }]
+              }).limit(3);
+              relatedJob = relatedJob.filter(j => j._id.toString() != job._id.toString())
               if (isApply.length > 0) job.isApply = true;
               else job.isApply = false;
               job['numApply'] = numApply.length;
@@ -139,12 +138,9 @@ module.exports = class Job {
           .then(async (job) => {
             var numApply = await applicationSchema.find({ idJob: mongoose.Types.ObjectId(job._id) })
             var relatedJob = await jobSchema.find({
-              $and: [
-                { deadline: { $gte: new Date() }, status: true },
-                { $or: [{ idCompany: mongoose.Schema.Types.ObjectId(job.idCompany._id) }, { requirement: job.requirement }] }
-              ]
-            }).limit(3).toObject();
-            console.log(relatedJob)
+              deadline: { $gte: new Date() }, status: true, $or: [{ idCompany: job.idCompany._id }, { requirement: job.requirement }]
+            }).limit(3);
+            relatedJob = relatedJob.filter(j => j._id.toString() != job._id.toString())
             job = job.toObject()
             job['numApply'] = numApply.length;
             job['isApply'] = false

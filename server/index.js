@@ -23,6 +23,7 @@ app.use(bodyParser.json())
 
 // swagger
 const swaggerJsDocs = YAML.load('./api.yaml');
+
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerJsDocs));
 
 
