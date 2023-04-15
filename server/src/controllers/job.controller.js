@@ -36,7 +36,7 @@ module.exports.readOne = (req, res, next) => {
 module.exports.readAll = (req, res, next) => {
   var page = req.query.page
   new Job()
-    .readAll(page)
+    .getAll(page)
     .then(rel => {
       res.status(200).json({ message: 'get all job success', success: true, data: rel })
     })
@@ -63,6 +63,7 @@ module.exports.updateOne = (req, res, next) => {
   job.requirement = requirement
   job.hourWorking = hourWorking
   job.postingDate = postingDate
+  job.updateDate = new Date()
   job.deadline = deadline
   job.salary = salary
   job.status = true;
@@ -86,14 +87,16 @@ module.exports.getAllSortByDate = (req, res, next) => {
 
 
 // loc job  NGUOI TIM VIEC
+// get suggest job name by keyword search
 module.exports.getSearchByKey = (req, res, next) => {
-  console.log(req.query.keyword)
+  //console.log(req.query.keyword)
   new Job()
     .searchByKey(req.query.keyword)
     .then((rel) => { return res.status(200).json({ success: true, message: "filter job success", data: rel }) })
-    .catch(err => res.status(404).json({ message: "filter job fail", success: false, error: err }))
+    .catch(err => res.status(404).json({ message: "filter job fail", success: false, error: err.message }))
 }
-//Tim kiem viec lam
+// Tim kiem viec lam
+// filter anh seach job by keyword
 module.exports.getSearchJob = (req, res, next) => {
   const condition = req.body
   new Job()
@@ -126,7 +129,10 @@ module.exports.uploadImage = (req, res, next) => {
   console.log(req.file.filename);
 }
 
-
+// hien thị danh sách các job theo company.
+// List all job of a specific company.
+// url: http://localhost:8000/job/list/company/:id
+// id: companyId
 module.exports.listJobByCompany = (req, res, next) => {
   try {
     var companyId = req.params.id
@@ -140,4 +146,31 @@ module.exports.listJobByCompany = (req, res, next) => {
     res.status(500).json({ message: err.message, isSuccess: false })
   }
 }
+//thong ke, bieu do
+module.exports.listJobByOccupatiton = (req, res, next) => {
+  new Job().statisticalJobByOccupation(5)
+    .then((data) => { res.status(200).json({ message: "get success", data: data, isSuccess: true }) })
+    .catch((err) => { res.status(500).json({ message: err.message, isSuccess: false }) })
 
+}
+
+module.exports.listNewJob = (req, res, next) => {
+  new Job().statisticalNewCreateJob('month')
+    .then((data) => { res.status(200).json({ message: "get success", data: data, isSuccess: true }) })
+    .catch((err) => { res.status(500).json({ message: err.message, isSuccess: false }) })
+}
+module.exports.customStatistical = (req, res, next) => {
+  new Job().dailyStatiistical('day')
+    .then((data) => { res.status(200).json({ message: "get success", data: data, isSuccess: true }) })
+    .catch((err) => { res.status(500).json({ message: err.message, isSuccess: false }) })
+}
+module.exports.applicationByOccupation = (req, res, next) => {
+  new Job().statisticalApplicationByOccupation('month')
+    .then((data) => { res.status(200).json({ message: "get success", data: data, isSuccess: true }) })
+    .catch((err) => { res.status(500).json({ message: err.message, isSuccess: false }) })
+}
+module.exports.mostApplicationJob = (req, res, next) => {
+  new Job().mostApplicationJob('month')
+    .then((data) => { res.status(200).json({ message: "get success", data: data, isSuccess: true }) })
+    .catch((err) => { res.status(500).json({ message: err.message, isSuccess: false }) })
+}

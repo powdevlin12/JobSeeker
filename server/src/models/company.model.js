@@ -33,6 +33,7 @@ module.exports = class Job {
       com.phone = this.#phone
       com.location = this.#location
       com.isDelete = this.#isDelete
+      com.createDate = new Date()
       com.idUser = this.#idUser
       com.save()
         .then((rel) => resolve(rel))
