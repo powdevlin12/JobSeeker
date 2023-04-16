@@ -6,7 +6,7 @@ info:
 servers:
   - url: http://localhost:8000
     description: My local server.
-  - url: http://staging-api.example.com
+  - url: https://job-seeker-smy5.onrender.com
     description: Server is deloyed.
 tags:
   - name: Auth 
