@@ -172,6 +172,7 @@ paths:
         content:
           multipart/form-data:
             schema:
+              type: object
               properties:
                 name:
                   type: string
@@ -182,6 +183,9 @@ paths:
                 email:
                   type: string
                   example: thudatdl123@gmail.com
+                avatar:
+                  type: string
+                  format: binary
         required: true
       responses:
         '200':
