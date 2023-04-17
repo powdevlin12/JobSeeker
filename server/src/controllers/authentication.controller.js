@@ -47,7 +47,7 @@ module.exports.login = (req, res, next) => {
 }
 
 module.exports.logOut = (req, res, next) => {
-  const { _id } = req.body
+  const { _id } = req.data
   new User(_id
     , undefined
     , undefined
@@ -228,7 +228,7 @@ module.exports.editProfile = (req, res, next) => {
     undefined,
     undefined,
     undefined
-  ).patchUser()
+  ).putUser()
     .then(result => res.status(200).json(result))
     .catch(err => res.status(500).json(err))
 }
