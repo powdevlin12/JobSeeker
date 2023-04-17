@@ -21,7 +21,7 @@ module.exports.create = (req, res, next) => {
   )
     .create()
     .then(user => {
-      res.status(200).json({ message: 'Đăng kí thành công !', success: true, data: user })
+      res.status(200).json({ message: 'Chúc mừng, bạn đã đăng kí thành công tài khoản của JobSeeker !', success: true, data: user })
     })
     .catch(err => res.status(401).json({ message: err.message, success: err.isSuccess }))
 }

@@ -163,7 +163,7 @@ paths:
       security:
         - Bearer: string
   /auth/edit-profile:
-    patch:
+    put:
       tags:
         - Auth
       summary: patch profile
