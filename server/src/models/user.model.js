@@ -226,7 +226,8 @@ module.exports = class User {
 
   logOut = () => new Promise(async (resolve, reject) => {
     try {
-      const data = await UserSchema.updateOne({_id : this.#id},{refreshToken : null})
+      console.log(this.#id);
+      const data = await UserSchema.updateOne({_id : this.#id},{refreshToken : null, confirmPasswordCode : null})
       resolve({data, message : "Logout success", isSuccess : true})
     } catch (error) {
       console.log(error)
@@ -250,7 +251,7 @@ module.exports = class User {
     }
   })
 
-  patchUser = () => new Promise(async(resolve, reject) => {
+  putUser = () => new Promise(async(resolve, reject) => {
     try {
       if (this.#email) {
         const checkEmail = await UserSchema.findOne({$and : [{email : this.#email}, {_id : {$ne : this.#id}}]})
