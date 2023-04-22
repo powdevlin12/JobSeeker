@@ -14,7 +14,7 @@ module.exports = {
                 undefined,
                 idJobSeeker,
                 idJob,
-                req.file.filename,
+                req.file.fileUrl,
                 new Date()
             )
                 .create()
