@@ -3,6 +3,8 @@ var jwt = require('jsonwebtoken');
 const { genaralAccessToken, genaralRefreshToken } = require('../utils');
 const { SendMailText } = require('../services/sendmail.service');
 const companySchema = require('../schemas/company.schema');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 module.exports = class User {
   #id
   #avatar
@@ -33,6 +35,9 @@ module.exports = class User {
     const emailExist = await UserSchema.findOne({ email: this.#email })
     const usernameExist = await UserSchema.findOne({username : this.#username})
 
+    if (!this.#email || !this.#phone || !this.#password || !this.#username || !this.#name) {
+      return reject({ message: "Không được để sót bất kỳ ô nào !", isSuccess: false })
+    }
     if (phoneExist) {
       return reject({ message: "Số điện thoại này đã đăng ký trước đó, vui lòng đổi lại !", isSuccess: false })
     }
@@ -52,10 +57,14 @@ module.exports = class User {
     user.phone = this.#phone
     user.email = this.#email
     user.username = this.#username
-    user.password = this.#password
+    
     user.role = this.#role
     user.refreshToken = this.#refreshToken
     user.confirmPasswordCode = this.#confirmPasswordCode
+
+    const hash = bcrypt.hashSync(this.#password, saltRounds);
+    user.password = hash;
+
     user.save()
       .then(user => resolve(user))
       .catch(err => reject(err))
@@ -66,15 +75,14 @@ module.exports = class User {
       if (this.#username === '' || this.#password === '') {
         return reject({message : 'not empty username or password'})
       }
-      console.log(this.#email);
       UserSchema
         .findOne({ $or : [{username: this.#username}, {email : this.#email}] })
         .then(user => resolve(user))
         .catch(err => reject(err))
     }).then(async user => {
       if (user) {
-        if (user.password === this.#password) {
-
+        const isMatch = bcrypt.compareSync(this.#password, user.password);
+        if (isMatch) {
           const newRefreshToken = jwt.sign({ _id : user._id, role : user.role }, process.env.REFRESH_TOKEN_KEY, {
             expiresIn: process.env.REFRESH_EXPIRESIN
           })
@@ -152,9 +160,12 @@ module.exports = class User {
     try {
       const user = await UserSchema.findOne({_id : this.#id})
       if (user) { 
-        this.#password !== user.password ? reject({message : "Mật khẩu không đúng !", isSuccess: false})
+        const isMatch = bcrypt.compareSync(this.#password, user.password);
+        const hashPassword = bcrypt.hashSync(newPassword, saltRounds);
+
+        !isMatch ? reject({message : "Mật khẩu không đúng !", isSuccess: false})
         : UserSchema.updateOne({_id : this.#id}, {
-          password : newPassword
+          password : hashPassword
         }).then(res => resolve({message : "Đổi mật khẩu thành công !", isSuccess : true, res}))
           .catch(err => {
             return reject({message : "Lỗi server", err : err})
@@ -199,7 +210,8 @@ module.exports = class User {
     try {
       const user = await UserSchema.findOne({confirmPasswordCode : this.#confirmPasswordCode, email : this.#email})
       if (user) {
-        const userUpdate = await UserSchema.updateOne({email : this.#email}, {password : newPassword})
+        const passwordHash = bcrypt.hashSync(newPassword, saltRounds);
+        const userUpdate = await UserSchema.updateOne({email : this.#email}, {password : passwordHash})
         if (userUpdate) {
           return resolve({message : "Đặt lại mật khẩu thành công !", isSuccess : true})
         }
@@ -214,7 +226,8 @@ module.exports = class User {
 
   logOut = () => new Promise(async (resolve, reject) => {
     try {
-      const data = await UserSchema.updateOne({_id : this.#id},{refreshToken : null})
+      console.log(this.#id);
+      const data = await UserSchema.updateOne({_id : this.#id},{refreshToken : null, confirmPasswordCode : null})
       resolve({data, message : "Logout success", isSuccess : true})
     } catch (error) {
       console.log(error)
@@ -238,7 +251,7 @@ module.exports = class User {
     }
   })
 
-  patchUser = () => new Promise(async(resolve, reject) => {
+  putUser = () => new Promise(async(resolve, reject) => {
     try {
       if (this.#email) {
         const checkEmail = await UserSchema.findOne({$and : [{email : this.#email}, {_id : {$ne : this.#id}}]})

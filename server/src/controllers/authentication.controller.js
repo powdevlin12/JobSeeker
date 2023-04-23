@@ -21,7 +21,7 @@ module.exports.create = (req, res, next) => {
   )
     .create()
     .then(user => {
-      res.status(200).json({ message: 'Đăng kí thành công !', success: true, data: user })
+      res.status(200).json({ message: 'Chúc mừng, bạn đã đăng kí thành công tài khoản của JobSeeker !', success: true, data: user })
     })
     .catch(err => res.status(401).json({ message: err.message, success: err.isSuccess }))
 }
@@ -47,7 +47,7 @@ module.exports.login = (req, res, next) => {
 }
 
 module.exports.logOut = (req, res, next) => {
-  const { _id } = req.body
+  const { _id } = req.data
   new User(_id
     , undefined
     , undefined
@@ -226,7 +226,7 @@ module.exports.editProfile = (req, res, next) => {
     undefined,
     undefined,
     undefined
-  ).patchUser()
+  ).putUser()
     .then(result => res.status(200).json(result))
     .catch(err => res.status(500).json(err))
 }

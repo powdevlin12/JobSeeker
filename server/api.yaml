@@ -6,7 +6,7 @@ info:
 servers:
   - url: http://localhost:8000
     description: My local server.
-  - url: http://staging-api.example.com
+  - url: https://job-seeker-smy5.onrender.com
     description: Server is deloyed.
 tags:
   - name: Auth 
@@ -88,6 +88,31 @@ paths:
           description: 'Send mail successfully.'
         '500':
           description: 'Send mail false !!!'
+  /auth/refresh-token:
+    post:
+      tags:
+        - Auth
+      summary: create new refresh token
+      requestBody:
+        description: create new refresh token
+        content:
+          application/json:
+            schema:
+              properties:
+                _id:
+                  type: string
+                role:
+                  type: string
+                  example : 'user'
+        required: true
+      responses:
+        '200':
+          description: 'create new refresh token successfully.'
+        '500':
+          description: 'create new refresh token false!!!'
+      security:
+        - Bearer: string
+
   /auth/confirm-password:
     put:
       tags:
@@ -113,30 +138,7 @@ paths:
           description: 'Set new password successfully.'
         '500':
           description: 'Set new password false!!!'
-  /auth/refresh-token:
-    post:
-      tags:
-        - Auth
-      summary: create new refresh token
-      requestBody:
-        description: create new refresh token
-        content:
-          application/json:
-            schema:
-              properties:
-                _id:
-                  type: string
-                role:
-                  type: string
-                  example : 'user'
-        required: true
-      responses:
-        '200':
-          description: 'create new refresh token successfully.'
-        '500':
-          description: 'create new refresh token false!!!'
-      security:
-        - Bearer: string
+
   /auth/change-password:
     put:
       tags:
@@ -163,7 +165,7 @@ paths:
       security:
         - Bearer: string
   /auth/edit-profile:
-    patch:
+    put:
       tags:
         - Auth
       summary: patch profile
@@ -192,6 +194,19 @@ paths:
           description: 'patch profile successfully.'
         '500':
           description: 'patch profiled false!!!'
+      security:
+        - Bearer: string
+  
+  /auth/logout:
+    patch:
+      tags:
+        - Auth
+      summary: patch logout
+      responses:
+        '200':
+          description: 'Logout successfully.'
+        '500':
+          description: 'Logout false!!!'
       security:
         - Bearer: string
   # job api
