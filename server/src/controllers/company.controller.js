@@ -1,19 +1,24 @@
 
+const { getUserIdFromJWTToken } = require('../middlewares');
 const Company = require('../models/company.model');
 const companySchema = require('../schemas/company.schema');
 
 module.exports.create = (req, res, next) => {
-  const { name, totalEmployee, type, about, phone, location, idUser } = req.body;
-  console.log(req.body)
-  new Company(
-    undefined, name, totalEmployee, type, about, phone, false, location, idUser
-  )
-    .create()
-    .then(user => {
-      console.log('thanh cong!')
-      res.status(200).json({ message: 'add new company success', success: true, data: user })
-    })
-    .catch(err => res.status(501).json({ message: err.message, success: err.isSuccess }))
+  const token = req.header('Authorization')
+  const accesstoken = getUserIdFromJWTToken(token)
+  const { name, totalEmployee, type, about, phone, location } = req.body;
+  if (accesstoken.success == false) res.status(501).json({ message: 'User is not defined', success: false })
+  else {
+    new Company(
+      undefined, name, totalEmployee, type, about, phone, false, location, accesstoken.message
+    )
+      .create(accesstoken.message)
+      .then(user => {
+        console.log('thanh cong!')
+        res.status(200).json({ message: 'add new company success', success: true, data: user })
+      })
+      .catch(err => res.status(501).json({ message: err.message, success: err.isSuccess }))
+  }
 }
 
 module.exports.getOne = (req, res, next) => {

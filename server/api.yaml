@@ -556,6 +556,18 @@ paths:
           description: 'Failed'
       security:
         - Bearer: string
+  /application/company:
+    get:
+      tags:
+        - Application
+      summary: Get Application By Company Id
+      responses:
+        '200':
+          description: 'Successfully.'
+        '500':
+          description: 'Failed'
+      security:
+        - Bearer: string
  #OCCUPATION 
   /occupation/list:
     get:

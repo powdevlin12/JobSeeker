@@ -63,5 +63,15 @@ module.exports = {
         } else {
             return res.status(500).json({ success: false, message: "get application failed" })
         }
+    },
+    getAllApplicationByCompanyId: (req, res, next) => {
+        const token = req.header('Authorization')
+        const decode = getUserIdFromJWTToken(token)
+        //console.log(jobId)
+        if (decode.message === false) { res.status(500).json({ success: false, message: "get application failed", error: 'user is not correct!' }) }
+        new applicationModel()
+            .getAllApplicationByCompanyId(decode.message)
+            .then((rel) => res.status(200).json({ success: true, message: "get application by company success", data: rel }))
+            .catch((err) => res.status(500).json({ success: false, message: "get application by company failed", error: err }))
     }
 }

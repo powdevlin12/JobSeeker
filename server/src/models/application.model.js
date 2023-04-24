@@ -1,5 +1,6 @@
 const { default: mongoose } = require("mongoose")
 const applicationSchema = require("../schemas/application.schema")
+const companySchema = require("../schemas/company.schema")
 
 module.exports = class ApplicationModel {
     #id
@@ -84,6 +85,7 @@ module.exports = class ApplicationModel {
             try {
                 const result = await applicationSchema.find({ idJobSeeker: mongoose.Types.ObjectId(userId) })
                     .populate({ path: 'idJob', populate: { path: 'idCompany' } });
+                console.log(result)
                 const page_limit = process.env.PAGE_LIMIT
                 const applies_total = result.length
                 const page_total = Math.ceil(applies_total / page_limit)
@@ -97,6 +99,28 @@ module.exports = class ApplicationModel {
                 else reject({ message: "can't get list application" })
             } catch (error) {
                 reject(error)
+            }
+        })
+    }
+    getAllApplicationByCompanyId = (userId) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                var company = await companySchema.findOne({ idUser: mongoose.Types.ObjectId(userId) })
+                if (company !== null) {
+                    var result = await applicationSchema.find()
+                        .populate('idJob');
+                    result = result.filter(a => (a.idJob.idCompany.toString() == company._id.toString()))
+                    if (result.length >= 0) {
+                        return resolve(result)
+                    }
+                    else return reject({ message: "can't get list application" })
+                }
+                else {
+                    return reject({ message: 'company is not exists' })
+                }
+            } catch (error) {
+                console.log(error)
+                return reject({ message: error })
             }
         })
     }

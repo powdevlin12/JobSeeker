@@ -23,21 +23,30 @@ module.exports = class Job {
     this.#isDelete = isDelete
     this.#idUser = idUser
   }
-  create = () => {
+  create = (idUser) => {
     return new Promise(async (resolve, reject) => {
-      const com = new companySchema()
-      com.name = this.#name
-      com.totalEmployee = this.#totalEmployee
-      com.type = this.#type
-      com.about = this.#about
-      com.phone = this.#phone
-      com.location = this.#location
-      com.isDelete = this.#isDelete
-      com.createDate = new Date()
-      com.idUser = this.#idUser
-      com.save()
-        .then((rel) => resolve(rel))
-        .catch((err) => reject(err))
+      try {
+        const isCreate = await companySchema.findOne({ idUser: mongoose.Types.ObjectId(idUser) })
+        if (isCreate !== null) return reject({ message: "User already create company before!" })
+        else {
+          const com = new companySchema()
+          com.name = this.#name
+          com.totalEmployee = this.#totalEmployee
+          com.type = this.#type
+          com.about = this.#about
+          com.phone = this.#phone
+          com.location = this.#location
+          com.isDelete = this.#isDelete
+          com.createDate = new Date()
+          com.idUser = this.#idUser
+          com.save()
+            .then((rel) => resolve(rel))
+            .catch((err) => reject(err))
+        }
+      }
+      catch (e) {
+        reject({ message: 'an exception occur when execute the request' })
+      }
     })
   }
   delete = (id) => {
