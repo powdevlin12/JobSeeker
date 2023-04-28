@@ -4,6 +4,7 @@ const { genaralAccessToken, genaralRefreshToken } = require('../utils');
 const { SendMailText } = require('../services/sendmail.service');
 const companySchema = require('../schemas/company.schema');
 const bcrypt = require('bcrypt');
+const { default: mongoose } = require('mongoose');
 const saltRounds = 10;
 module.exports = class User {
   #id
@@ -16,7 +17,8 @@ module.exports = class User {
   #role
   #refreshToken
   #confirmPasswordCode
-  constructor(id, avatar, name, email, phone, username, password, role = "staff", refreshToken = null, confirmPasswordCode=null) {
+  #jobFavourite
+  constructor(id, avatar, name, email, phone, username, password, role = "staff", refreshToken = null, confirmPasswordCode=null, jobFavourite=[]) {
     this.#id = id
     this.#avatar = avatar
     this.#name = name
@@ -27,6 +29,7 @@ module.exports = class User {
     this.#role = role
     this.#refreshToken = refreshToken
     this.#confirmPasswordCode = confirmPasswordCode
+    this.#jobFavourite = jobFavourite
   }
 
   create = () => new Promise(async (resolve, reject) => {
@@ -285,4 +288,27 @@ module.exports = class User {
     }
   })
 
+  // add list job favourite
+  patchAddJobFavourite = (jobId) => new Promise(async(resolve, reject) => {
+    try {
+      const user = await UserSchema.findOne({_id : this.#id})
+      const isExistInListFavourite = user.jobFavourite.filter(item => {
+        console.log("item jobs " +item);
+        console.log(item.jobId , mongoose.Types.ObjectId(jobId))
+        return JSON.stringify(item.jobId) === JSON.stringify(mongoose.Types.ObjectId(jobId))
+      })
+      if (isExistInListFavourite.length === 0) {
+        // chua luu job nay vao list yeu thich -> them vao list
+        await user.addJobFavourite(jobId);
+        return resolve({message : "Đã thêm công việc này vào danh sách yêu thích", isSuccess : true})
+      } else {
+        // da luu roi -> loai bo ra khoi list
+        await user.removeJobFavourite(jobId);
+        return resolve({message : "Đã bỏ công việc này ra khỏi danh sách yêu thích", isSuccess : true})
+      }
+    } catch (error) {
+      console.log(error)
+      reject({message : "Lỗi từ server", isSuccess : false})
+    }
+  })
 }

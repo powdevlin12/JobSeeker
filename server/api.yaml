@@ -367,6 +367,26 @@ paths:
           description: 'Failed'
       security:
         - Bearer: string
+  /job//list-job-favourite:
+    patch:
+      tags:
+        - Job
+      summary: Add or remove list job favourite
+      requestBody:
+        description : Add or remove list job favourite
+        content:
+          application/json:
+            schema:
+              properties:
+                jobId:
+                  type: string
+      responses:
+        '200':
+          description: 'Get Successfully.'
+        '500':
+          description: 'Get user false !!!'
+      security:
+      - Bearer: string
 #COMPANY API
   /company/list:
     get:

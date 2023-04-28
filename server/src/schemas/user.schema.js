@@ -36,7 +36,36 @@ const userSchema = new mongoose.Schema({
   },
   confirmPasswordCode : {
     type : Number
-  }
+  },
+  jobFavourite : [
+    {
+      jobId : {
+        type : mongoose.Schema.Types.ObjectId,
+      },
+      createdAt : {
+        type : Date,
+        default : new Date()
+      }
+    }
+  ]
 })
+
+userSchema.methods.addJobFavourite = function (job) {
+  const listJobFavouriteNew = [...this.jobFavourite, {
+    jobId : job,
+    createdAt : new Date()
+  }]
+  this.jobFavourite = listJobFavouriteNew;
+  return this.save();
+}
+
+userSchema.methods.removeJobFavourite = function (job) {
+  const listJobFavouriteNew = [...this.jobFavourite].filter(item => JSON.stringify(item.jobId) !== JSON.stringify(mongoose.Types.ObjectId(job)))
+  this.jobFavourite = listJobFavouriteNew;
+
+  return this.save();
+}
+
+
 
 module.exports = mongoose.model("User", userSchema)
