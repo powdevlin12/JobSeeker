@@ -367,7 +367,7 @@ paths:
           description: 'Failed'
       security:
         - Bearer: string
-  /job//list-job-favourite:
+  /job/list-job-favourite:
     patch:
       tags:
         - Job
