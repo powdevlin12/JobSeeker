@@ -240,7 +240,10 @@ module.exports = class User {
 
   getUser = () => new Promise(async(resolve, reject) => {
     try {
-      const res = await UserSchema.findOne({_id : this.#id})
+      const res = await UserSchema.findOne({_id : this.#id}).populate({
+        path: 'jobFavourite',
+        populate: { path: 'jobId'}
+      })
       let company = []
       if (res) {
         company = await companySchema.find({idUser : this.#id})

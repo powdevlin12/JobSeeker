@@ -41,11 +41,12 @@ const userSchema = new mongoose.Schema({
     {
       jobId : {
         type : mongoose.Schema.Types.ObjectId,
+        ref : 'Job'
       },
       createdAt : {
         type : Date,
         default : new Date()
-      }
+      },
     }
   ]
 })
