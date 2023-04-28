@@ -231,3 +231,23 @@ module.exports.editProfile = (req, res, next) => {
     .catch(err => res.status(500).json(err))
 }
 
+module.exports.addJobFavourite = (req, res, next) => {
+  const { _id } = req.data
+  const { jobId } = req.body
+  new User(
+    _id,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined
+  ).patchAddJobFavourite(jobId)
+    .then(result => res.status(200).json(result))
+    .catch(err => res.status(500).json(err))
+}
+

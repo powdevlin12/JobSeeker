@@ -1,4 +1,5 @@
 const jobController = require('../controllers/job.controller')
+const authController = require('../controllers/authentication.controller')
 const { verifyToken, verifyTokenIsAdmin } = require('../middlewares')
 const { upload } = require('../services/uploadImage.service')
 
@@ -33,3 +34,4 @@ module.exports = require('express').Router()
   .get("/statistical/custom-statistical", jobController.customStatistical)
   .get("/statistical/application-by-occupation", jobController.applicationByOccupation)
   .get("/statistical/most-application-job", jobController.mostApplicationJob)
+  .patch("/list-job-favourite", verifyToken, authController.addJobFavourite)
