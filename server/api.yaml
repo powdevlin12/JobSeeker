@@ -398,16 +398,22 @@ paths:
           description: 'Successfully.'
         '500':
           description: 'Failed'
-  /company/list/paging:
+  /company/list/{name}:
     get:
       tags:
         - Company
-      summary: Get Company
+      summary: Get Company by search key
       parameters:
+        - name: name
+          in: path
+          required: true
+          description: Comapny suggest name.
+          schema:
+            type : string
         - name: page
           in: query
-          required: true
-          description: Comapny id.
+          required: false
+          description: Comapny page number.
           schema:
             type : number
       responses:

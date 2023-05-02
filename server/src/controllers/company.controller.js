@@ -54,7 +54,7 @@ module.exports.getPaging = (req, res, next) => {
     new Company(
       undefined, undefined, undefined, undefined, undefined, undefined, undefined
     )
-      .getPaging(Number.parseInt(req.query.page))
+      .getPaging(req.params.name, req.query.page)
       .then(rel => {
         res.status(200).json({ message: 'get all  company  success', success: true, data: rel })
       })

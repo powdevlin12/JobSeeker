@@ -118,7 +118,9 @@ module.exports = class Job {
               var isApply = await applicationSchema.find({ idJob: mongoose.Types.ObjectId(job._id), idJobSeeker: mongoose.Types.ObjectId(userId.message) })
               var relatedJob = await jobSchema.find({
                 deadline: { $gte: new Date() }, status: true, $or: [{ idCompany: job.idCompany._id }, { requirement: job.requirement }]
-              }).limit(3);
+              })
+                .limit(3)
+                .populate('idCompany');
               relatedJob = relatedJob.filter(j => j._id.toString() != job._id.toString())
               if (isApply.length > 0) job.isApply = true;
               else job.isApply = false;
@@ -139,7 +141,9 @@ module.exports = class Job {
             var numApply = await applicationSchema.find({ idJob: mongoose.Types.ObjectId(job._id) })
             var relatedJob = await jobSchema.find({
               deadline: { $gte: new Date() }, status: true, $or: [{ idCompany: job.idCompany._id }, { requirement: job.requirement }]
-            }).limit(3);
+            })
+              .limit(3)
+              .populate('idCompany');
             relatedJob = relatedJob.filter(j => j._id.toString() != job._id.toString())
             job = job.toObject()
             job['numApply'] = numApply.length;

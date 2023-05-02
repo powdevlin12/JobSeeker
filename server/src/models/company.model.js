@@ -1,6 +1,7 @@
 const { default: mongoose } = require('mongoose')
 const companySchema = require('../schemas/company.schema')
 const jobSchema = require('../schemas/job.schema')
+const { chuanhoadaucau } = require('../services/standardVietNamWork')
 
 module.exports = class Job {
   id
@@ -96,23 +97,35 @@ module.exports = class Job {
       else reject({ message: "can't not get list company" })
     })
   }
-  getPaging = (page) => {
+  getPaging = (name, page) => {
     return new Promise(async (resolve, reject) => {
       try {
-        var limit = 20
-        var total = await companySchema.countDocuments();
+        var limit = process.env.PAGE_LIMIT
+        var resultTotal = await companySchema.find({ isDelete: false })
+        resultTotal = resultTotal.filter(cpn => chuanhoadaucau(cpn.name).toLowerCase().includes(chuanhoadaucau(name).toLowerCase()))
+        var total = resultTotal.length
         var page_total = Math.ceil(total / limit)
-        var result = await companySchema.find({}).skip(limit * page).limit(limit)
-        if (page < page_total) {
-          result.next = page + 1
+        if (page == undefined) {
+          return resolve({
+            data: resultTotal.slice(0, limit),
+            current_page: page,
+            page_limit: limit,
+            page_total: page_total
+          })
         }
-        if (page > 0) {
-          result.previous = page - 1
+        page = Number.parseInt(page)
+        if (page >= 0 && page < page_total) {
+          resolve({
+            data: resultTotal.slice(limit * page, limit * (page + 1)),
+            current_page: page,
+            page_limit: limit,
+            page_total: page_total
+          })
         }
-        resolve(result)
+        return reject({ message: `can't not find result` })
       }
       catch (e) {
-        reject(e)
+        return reject(e)
       }
     })
   }
