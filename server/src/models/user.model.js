@@ -242,7 +242,9 @@ module.exports = class User {
     try {
       const res = await UserSchema.findOne({_id : this.#id}).populate({
         path: 'jobFavourite',
-        populate: { path: 'jobId'}
+        populate: { path: 'jobId', populate : {
+          path : 'idCompany'
+        }}
       })
       let company = []
       if (res) {
