@@ -14,7 +14,7 @@ module.exports = require('express').Router()
   //tạo job mới
   .post("/create", verifyTokenIsAdmin, jobController.create)
   //xóa job
-  .delete("/delete", verifyTokenIsAdmin, jobController.delete)
+  .patch("/delete", verifyTokenIsAdmin, jobController.delete)
   //update job
   .put("/update", verifyTokenIsAdmin, jobController.updateOne)
   // lọc job theo idOccupation, idCompany, Sắp xếp, ...
