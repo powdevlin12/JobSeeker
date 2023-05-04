@@ -44,6 +44,7 @@ module.exports.readAll = (req, res, next) => {
 }
 module.exports.delete = (req, res, next) => {
   const { _id } = req.body
+  console.log(req.body);
   new Job(
     undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
   )
