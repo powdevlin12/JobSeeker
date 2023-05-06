@@ -288,6 +288,12 @@ paths:
           description: Comapny id.
           schema:
             type : string
+        - name: name
+          in: query
+          required: true
+          description: Comapny nanme.
+          schema:
+            type : string
       responses:
         '200':
           description: 'Get Successfully.'
