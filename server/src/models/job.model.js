@@ -66,7 +66,7 @@ module.exports = class Job {
   delete = (id) => {
     return new Promise(async (resolve, reject) => {
       try {
-        var jobFind = await jobSchema.findOne({_id : id});
+        var jobFind = await jobSchema.findOne({ _id: id });
         console.log(jobFind, id);
         if (!jobFind?.status) {
           reject({ message: "job already deleted" })
@@ -274,13 +274,26 @@ module.exports = class Job {
     })
   }
 
-  listJobByCompany(companyId) {
-    return new Promise((resolve, reject) => {
-      jobSchema.find({ idCompany: companyId })
-        .populate('idCompany')
-        .populate('idOccupation')
-        .then((data) => resolve(data))
-        .catch((err) => reject(err));
+  listJobByCompany(companyId, companyName) {
+    if (companyName == undefined) {
+      return new Promise((resolve, reject) => {
+        jobSchema.find({ idCompany: companyId })
+          .populate('idCompany')
+          .populate('idOccupation')
+          .then((data) => resolve(data))
+          .catch((err) => reject(err));
+      });
+    }
+    return new Promise(async (resolve, reject) => {
+      try {
+        var listJob = await jobSchema.find({ idCompany: companyId })
+          .populate('idCompany')
+          .populate('idOccupation');
+        listJob = listJob.filter(job => chuanhoadaucau(job.name).toLowerCase().includes(chuanhoadaucau(companyName).toLowerCase()))
+        resolve(listJob)
+      } catch (error) {
+        reject({ message: error })
+      }
     });
   }
   //thông tin thống kê, biểu đồ
