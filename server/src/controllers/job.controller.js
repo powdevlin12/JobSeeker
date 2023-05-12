@@ -162,7 +162,10 @@ module.exports.listNewJob = (req, res, next) => {
     .catch((err) => { res.status(500).json({ message: err.message, isSuccess: false }) })
 }
 module.exports.customStatistical = (req, res, next) => {
-  new Job().dailyStatiistical('day')
+  var option = req.query.option
+  option = Number.parseInt(option)
+  if (option == NaN) option = 0;
+  new Job().dailyStatiistical(option)
     .then((data) => { res.status(200).json({ message: "get success", data: data, isSuccess: true }) })
     .catch((err) => { res.status(500).json({ message: err.message, isSuccess: false }) })
 }

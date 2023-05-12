@@ -373,12 +373,37 @@ module.exports = class Job {
 
   dailyStatiistical = (type) => {
     return new Promise(async (resolve, reject) => {
+      var crtDay = new Date().getDate();
+      var crtDate = new Date().getDate();
+      var crtMonth = new Date().getMonth() + 1;
+      var crtYear = new Date().getFullYear();
+      var dueDate = new Date().toISOString();
+      var fromDate = new Date(new Date() - 86400000)
+      switch (type) {
+        //day
+        case 0:
+          var dueDate = new Date().toISOString();
+          var fromDate = new Date(new Date() - 86400000)
+          break;
+        //week
+        case 1:
+          var dueDate = new Date().toISOString();
+          var fromDate = new Date(new Date() - 86400000 * (crtDay + 1))
+          break;
+        //month
+        case 2:
+          var dueDate = new Date().toISOString();
+          var fromDate = new Date(`${crtYear}-${crtMonth}-1 00:00:00`)
+          break;
+        default:
+          break;
+      }
+      console.log(`from date ${fromDate}`)
+      console.log(`due date ${dueDate}`)
       try {
-        var currentDate = new Date().toISOString();
-        var lastDate = new Date(new Date() - 86400000)
-        var newApplies = await applicationSchema.find({ submitDate: { $lte: currentDate, $gte: lastDate } }).countDocuments();
-        var newJobs = await jobSchema.find({ postingDate: { $lte: currentDate, $gte: lastDate } }).countDocuments()
-        var newCompanies = await companySchema.find({ createDate: { $lte: currentDate, $gte: lastDate } }).countDocuments()
+        var newApplies = await applicationSchema.find({ submitDate: { $lte: dueDate, $gte: fromDate } }).countDocuments();
+        var newJobs = await jobSchema.find({ postingDate: { $lte: dueDate, $gte: fromDate } }).countDocuments()
+        var newCompanies = await companySchema.find({ createDate: { $lte: dueDate, $gte: fromDate } }).countDocuments()
         var totalJob = await jobSchema.find({ status: true }).countDocuments()
         var result = {
           newApplies: newApplies,
@@ -386,7 +411,6 @@ module.exports = class Job {
           newCompanies: newCompanies,
           totalJob: totalJob
         }
-        console.log(result)
         resolve(result)
       } catch (error) {
         reject(error)
