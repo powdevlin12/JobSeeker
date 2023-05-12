@@ -32,10 +32,10 @@ module.exports.login = (req, res, next) => {
   new User(undefined
     , undefined
     , undefined
-    , username
+    , username.toLowerCase()
     , undefined
     , username
-    , password
+    , password.toLowerCase()
     , undefined
     , undefined
     , undefined)
