@@ -355,7 +355,7 @@ paths:
       security:
         - Bearer: string
   /job/delete:
-    delete:
+    patch:
       tags:
         - Job
       summary: Delete Job
