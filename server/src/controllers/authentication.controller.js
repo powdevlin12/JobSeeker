@@ -11,7 +11,7 @@ module.exports.create = (req, res, next) => {
   new User(undefined,
     avatar,
     name,
-    email,
+    email.toLowerCase(),
     phone,
     username,
     password,
