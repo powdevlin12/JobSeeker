@@ -711,6 +711,13 @@ paths:
       tags: 
         - Statistical
       summary: statistical method
+      parameters:
+        - name: option
+          in: query
+          required: true
+          description: option.
+          schema:
+            type : string
       responses:
         '200':
           description: 'Successfull'
