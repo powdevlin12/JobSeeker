@@ -48,7 +48,10 @@ const userSchema = new mongoose.Schema({
         default : new Date()
       },
     }
-  ]
+  ],
+  tokenDevice : {
+    type : String
+  }
 })
 
 userSchema.methods.addJobFavourite = function (job) {

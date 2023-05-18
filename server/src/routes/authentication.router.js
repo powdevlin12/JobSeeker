@@ -25,3 +25,4 @@ module.exports = require('express').Router()
   .put("/edit-profile", [verifyToken, upload.Image.single("avatar")], authController.editProfile)
   .post("/refresh-token", verifyTokenRefresh, authController.createRefreshToken)
   .patch("/logout", verifyToken, authController.logOut)
+  .patch("/update-avatar",[verifyToken,upload.Image.single("avatar")],authController.updateAvatar);

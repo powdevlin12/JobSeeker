@@ -18,7 +18,8 @@ module.exports = class User {
   #refreshToken
   #confirmPasswordCode
   #jobFavourite
-  constructor(id, avatar, name, email, phone, username, password, role = "staff", refreshToken = null, confirmPasswordCode=null, jobFavourite=[]) {
+  #tokenDevice
+  constructor(id, avatar, name, email, phone, username, password, role = "staff", refreshToken = null, confirmPasswordCode=null, jobFavourite=[], tokenDevice='') {
     this.#id = id
     this.#avatar = avatar
     this.#name = name
@@ -30,6 +31,7 @@ module.exports = class User {
     this.#refreshToken = refreshToken
     this.#confirmPasswordCode = confirmPasswordCode
     this.#jobFavourite = jobFavourite
+    this.#tokenDevice = tokenDevice
   }
 
   create = () => new Promise(async (resolve, reject) => {
@@ -95,7 +97,7 @@ module.exports = class User {
           })
           
           resolve({accessToken : newAccessToken, refreshToken : newRefreshToken})
-          await UserSchema.updateOne({_id : user._id}, {refreshToken : newAccessToken})
+          await UserSchema.updateOne({_id : user._id}, {refreshToken : newAccessToken, tokenDevice : this.#tokenDevice})
         } else {
           reject({ message: "Tài khoản hoặc mật khẩu không chính xác", isSuccess: false })
         }
@@ -289,6 +291,16 @@ module.exports = class User {
       resolve({message : "Cập nhật thông tin thành công !", isSuccess : true})
     } catch (error) {
       console.log(error)
+      reject({message : "Lỗi từ server", isSuccess : false})
+    }
+  })
+
+  patchAvatarUser = () => new Promise(async (resolve, reject) => {
+    try {
+      await UserSchema.updateOne({_id : this.#id}, {avatar : this.#avatar})
+      resolve({message : "Cập nhật avatar thành công !", isSuccess : true})
+    } catch (error) {
+      console.log(error);
       reject({message : "Lỗi từ server", isSuccess : false})
     }
   })
