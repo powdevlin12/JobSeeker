@@ -5,3 +5,4 @@ module.exports = api => api
   .use('/occupation', require('./occupation.router'))
   .use('/application', require('./application.router'))
   .use('/statistical', require('./statistical.route'))
+  .use('/firebase', require('./firebase.route'))

@@ -6,7 +6,8 @@ const path = require('path')
 
 
 module.exports.create = (req, res, next) => {
-  const { name, phone, email, password, avatar, username, role = "user", refreshToken = null } = req.body;
+  const { name, phone, email, password, username, role = "user", refreshToken = null } = req.body;
+  const avatar = "avatar.png"
   console.log(req.body)
   new User(undefined,
     avatar,
@@ -27,7 +28,7 @@ module.exports.create = (req, res, next) => {
 }
 
 module.exports.login = (req, res, next) => {
-  const { username, password } = req.body;
+  const { username, password, tokenDevice } = req.body;
   console.log(username, password);
   new User(undefined
     , undefined
@@ -38,7 +39,10 @@ module.exports.login = (req, res, next) => {
     , password.toLowerCase()
     , undefined
     , undefined
-    , undefined)
+    , undefined
+    , undefined
+    , tokenDevice
+    )
     .login()
     .then(result => {
       res.status(200).json({ message: 'Đăng nhập thành công !', success: true, data: result })
@@ -227,6 +231,25 @@ module.exports.editProfile = (req, res, next) => {
     undefined,
     undefined
   ).putUser()
+    .then(result => res.status(200).json(result))
+    .catch(err => res.status(500).json(err))
+}
+
+module.exports.updateAvatar = (req, res, next) => {
+  const { _id } = req.data
+  const file = req.file
+  new User(
+    _id,
+    file?.filename,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined
+  ).patchAvatarUser()
     .then(result => res.status(200).json(result))
     .catch(err => res.status(500).json(err))
 }
