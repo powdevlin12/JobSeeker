@@ -250,8 +250,17 @@ module.exports = class Job {
             switch (i) {
               case 'locationWorking':
                 if (condition[i].length > 0) {
-                  for (let tmp = 0; tmp < condition[i].length; tmp++) condition[i][tmp] = chuanhoadaucau(condition[i][tmp]).toLowerCase();
-                  rel = rel.filter(item => condition[i].includes(chuanhoadaucau(item.locationWorking).toLowerCase()))
+                  var tmpArray = [];
+                  for (let tmp = 0; tmp < condition[i].length; tmp++) {
+                    condition[i][tmp] = chuanhoadaucau(condition[i][tmp]).toLowerCase();
+                    for (let relTmp of rel) {
+                      if (chuanhoadaucau(relTmp.locationWorking).toLowerCase().includes(condition[i][tmp])) {
+                        tmpArray.push(relTmp);
+                      }
+                    }
+                  }
+                  rel = tmpArray;
+                  //rel = rel.filter(item => condition[i].includes(chuanhoadaucau(item.locationWorking).toLowerCase()))
                 }
                 break;
               case 'idCompany':
@@ -398,8 +407,6 @@ module.exports = class Job {
         default:
           break;
       }
-      console.log(`from date ${fromDate}`)
-      console.log(`due date ${dueDate}`)
       try {
         var newApplies = await applicationSchema.find({ submitDate: { $lte: dueDate, $gte: fromDate } }).countDocuments();
         var newJobs = await jobSchema.find({ postingDate: { $lte: dueDate, $gte: fromDate } }).countDocuments()
