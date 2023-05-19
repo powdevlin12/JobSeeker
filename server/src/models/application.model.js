@@ -1,6 +1,10 @@
 const { default: mongoose } = require("mongoose")
 const applicationSchema = require("../schemas/application.schema")
 const companySchema = require("../schemas/company.schema")
+const jobSchema = require("../schemas/job.schema")
+const jobseekerSchema = require("../schemas/jobseeker.schema")
+const userSchema = require("../schemas/user.schema")
+const { pushNotification } = require("../utils")
 
 module.exports = class ApplicationModel {
     #id
@@ -17,14 +21,30 @@ module.exports = class ApplicationModel {
         this.#submitDate = submitDate
     }
     create = () => {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             const app = new applicationSchema()
             app.idJobSeeker = this.#idJobSeeker
             app.idJob = this.#idJob
             app.cv = this.#cv
             app.submitDate = new Date()
+
+            const tokenDeviceSeeker = await userSchema.findById(this.#idJobSeeker).then(result => {
+                return result.tokenDevice;
+            });
+            console.log(tokenDeviceSeeker);
+            const tokenDeviceAdmin = await jobSchema.findById(this.#idJob).populate({
+                path : 'idCompany',                
+                populate : {
+                    path : 'idUser',
+                }    
+            }).then(result => result.idCompany.idUser.tokenDevice);
             app.save()
-                .then((rel) => resolve(rel))
+                .then((rel) => 
+                {
+                    pushNotification(tokenDeviceSeeker , "Chúc mừng bạn đã nộp CV thành công !");
+                    pushNotification(tokenDeviceAdmin , "Vừa có người mới nộp hồ sơ !");
+                    return resolve(rel)
+                })
                 .catch(err => reject(err))
         })
     }
