@@ -18,7 +18,9 @@ module.exports.create = (req, res, next) => {
     password,
     role,
     refreshToken,
-    undefined
+    undefined,
+    undefined,
+    undefined,
   )
     .create()
     .then(user => {
@@ -36,7 +38,7 @@ module.exports.login = (req, res, next) => {
     , username.toLowerCase()
     , undefined
     , username
-    , password.toLowerCase()
+    , password
     , undefined
     , undefined
     , undefined
