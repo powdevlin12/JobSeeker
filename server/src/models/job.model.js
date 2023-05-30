@@ -86,7 +86,7 @@ module.exports = class Job {
       const total_job = await jobSchema.countDocuments()
       const page_total = Math.ceil(total_job / page_limit)
       if (page === undefined) {
-        return jobSchema.find({}).limit(page_limit)
+        return jobSchema.find({ status: true }).limit(page_limit)
           .populate('idCompany')
           .populate('idOccupation')
           .then((job) => { return resolve({ data: job, page_total: page_total, current_page: 0, job_per_page: Number.parseInt(page_limit) }) })
@@ -94,7 +94,7 @@ module.exports = class Job {
       }
       page = Number.parseInt(page)
       if (page >= 0 && page < page_total) {
-        return jobSchema.find({}).skip(page * page_limit).limit(page_limit)
+        return jobSchema.find({ status: true }).skip(page * page_limit).limit(page_limit)
           .populate('idCompany')
           .populate('idOccupation')
           .then((job) => { return resolve({ data: job, page_total: page_total, current_page: page, job_per_page: Number.parseInt(page_limit) }) })
