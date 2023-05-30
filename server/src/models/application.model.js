@@ -33,16 +33,15 @@ module.exports = class ApplicationModel {
             });
             console.log(tokenDeviceSeeker);
             const tokenDeviceAdmin = await jobSchema.findById(this.#idJob).populate({
-                path : 'idCompany',                
-                populate : {
-                    path : 'idUser',
-                }    
+                path: 'idCompany',
+                populate: {
+                    path: 'idUser',
+                }
             }).then(result => result.idCompany.idUser.tokenDevice);
             app.save()
-                .then((rel) => 
-                {
-                    pushNotification(tokenDeviceSeeker , "Chúc mừng bạn đã nộp CV thành công !");
-                    pushNotification(tokenDeviceAdmin , "Vừa có người mới nộp hồ sơ !");
+                .then((rel) => {
+                    pushNotification(tokenDeviceSeeker, "Chúc mừng bạn đã nộp CV thành công !");
+                    pushNotification(tokenDeviceAdmin, "Vừa có người mới nộp hồ sơ !");
                     return resolve(rel)
                 })
                 .catch(err => reject(err))
@@ -105,7 +104,6 @@ module.exports = class ApplicationModel {
             try {
                 const result = await applicationSchema.find({ idJobSeeker: mongoose.Types.ObjectId(userId) })
                     .populate({ path: 'idJob', populate: { path: 'idCompany' } });
-                console.log(result)
                 const page_limit = process.env.PAGE_LIMIT
                 const applies_total = result.length
                 const page_total = Math.ceil(applies_total / page_limit)
@@ -114,7 +112,7 @@ module.exports = class ApplicationModel {
                 }
                 page = Number.parseInt(page)
                 if (page >= 0 && page <= page_total) {
-                    resolve({ data: result.slice(page_limit * page + 1, page_limit * (page + 1)), page_total: page_total, current_page: 0, page_limit: page_limit })
+                    resolve({ data: result.slice(page_limit * page, page_limit * (page + 1) - 1), page_total: page_total, current_page: 0, page_limit: page_limit })
                 }
                 else reject({ message: "can't get list application" })
             } catch (error) {
