@@ -29,20 +29,21 @@ module.exports = class ApplicationModel {
             app.submitDate = new Date()
 
             const tokenDeviceSeeker = await userSchema.findById(this.#idJobSeeker).then(result => {
-                return result.tokenDevice;
+                return result?.tokenDevice;
             });
-            console.log(tokenDeviceSeeker);
             const tokenDeviceAdmin = await jobSchema.findById(this.#idJob).populate({
                 path : 'idCompany',                
                 populate : {
                     path : 'idUser',
                 }    
-            }).then(result => result.idCompany.idUser.tokenDevice);
+            }).then(result => result?.idCompany?.idUser?.tokenDevice);
             app.save()
                 .then((rel) => 
                 {
-                    pushNotification(tokenDeviceSeeker , "Chúc mừng bạn đã nộp CV thành công !");
-                    pushNotification(tokenDeviceAdmin , "Vừa có người mới nộp hồ sơ !");
+                    if (tokenDeviceSeeker && tokenDeviceAdmin)  {
+                        pushNotification(tokenDeviceSeeker , "Chúc mừng bạn đã nộp CV thành công !");
+                        pushNotification(tokenDeviceAdmin , "Vừa có người mới nộp hồ sơ !");
+                    }
                     return resolve(rel)
                 })
                 .catch(err => reject(err))
