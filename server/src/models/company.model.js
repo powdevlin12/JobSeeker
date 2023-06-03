@@ -73,9 +73,11 @@ module.exports = class Job {
             for (let i = 0; i < rel.length; i++) {
               rel[i] = rel[i].toObject();
               var numJob = await jobSchema.find({ idCompany: mongoose.Types.ObjectId(rel[i]._id) })
+              var hiringJob = await jobSchema.find({ status: true, deadline: { $gte: new Date() }, idCompany: mongoose.Types.ObjectId(rel[i]._id) })
               rel[i]['numJob'] = numJob.length
+              rel[i]['hiringJob'] = hiringJob.length
             }
-            resolve({ data: rel, total_page: page_total, current_page: 0, page_limit: Number.parseInt(page_limit) })
+            resolve({ data: rel, page_total: page_total, current_page: 0, page_limit: Number.parseInt(page_limit) })
           })
           .catch((err) => { reject(err) })
       }
@@ -88,9 +90,11 @@ module.exports = class Job {
             for (let i = 0; i < rel.length; i++) {
               rel[i] = rel[i].toObject();
               var numJob = await jobSchema.find({ idCompany: mongoose.Types.ObjectId(rel[i]._id) })
+              var hiringJob = await jobSchema.find({ status: true, deadline: { $gte: new Date() }, idCompany: mongoose.Types.ObjectId(rel[i]._id) })
               rel[i]['numJob'] = numJob.length
+              rel[i]['hiringJob'] = hiringJob.length
             }
-            resolve({ data: rel, total_page: page_total, current_page: page, page_limit: Number.parseInt(page_limit) })
+            resolve({ data: rel, page_total: page_total, current_page: page, page_limit: Number.parseInt(page_limit) })
           })
           .catch((err) => { reject(err) })
       }
@@ -106,8 +110,16 @@ module.exports = class Job {
         var total = resultTotal.length
         var page_total = Math.ceil(total / limit)
         if (page == undefined) {
+          let results = resultTotal.slice(0, limit);
+          for (let i = 0; i < results.length; i++) {
+            results[i] = results[i].toObject();
+            var numJob = await jobSchema.find({ idCompany: mongoose.Types.ObjectId(results[i]._id) })
+            var hiringJob = await jobSchema.find({ status: true, deadline: { $gte: new Date() }, idCompany: mongoose.Types.ObjectId(results[i]._id) })
+            results[i]['numJob'] = numJob.length
+            results[i]['hiringJob'] = hiringJob.length
+          }
           return resolve({
-            data: resultTotal.slice(0, limit),
+            data: results,
             current_page: page,
             page_limit: limit,
             page_total: page_total
@@ -115,8 +127,16 @@ module.exports = class Job {
         }
         page = Number.parseInt(page)
         if (page >= 0 && page < page_total) {
+          let results = resultTotal.slice(limit * page, limit * (page + 1));
+          for (let i = 0; i < results.length; i++) {
+            results[i] = results[i].toObject();
+            var numJob = await jobSchema.find({ idCompany: mongoose.Types.ObjectId(results[i]._id) })
+            var hiringJob = await jobSchema.find({ status: true, deadline: { $gte: new Date() }, idCompany: mongoose.Types.ObjectId(results[i]._id) })
+            results[i]['numJob'] = numJob.length
+            results[i]['hiringJob'] = hiringJob.length
+          }
           resolve({
-            data: resultTotal.slice(limit * page, limit * (page + 1)),
+            data: results,
             current_page: page,
             page_limit: limit,
             page_total: page_total
@@ -132,7 +152,7 @@ module.exports = class Job {
   readOne = (id) => {
     return new Promise((resolve, reject) => {
       return companySchema.findById(id).populate({
-        path : 'idUser'
+        path: 'idUser'
       })
         .then((rel) => {
           if (rel.isDelete) reject({ message: "this company is deleted" })
