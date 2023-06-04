@@ -53,6 +53,8 @@ module.exports = class Job {
   delete = (id) => {
     return new Promise(async (resolve, reject) => {
       const company = await companySchema.findById(id);
+      if (company == null)
+        return reject({ mesasge: "company not exist" })
       if (company.isDelete) {
         reject({ message: "This company has been deleted!" })
       }
