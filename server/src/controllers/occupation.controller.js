@@ -15,7 +15,8 @@ module.exports.create = (req, res, next) => {
 }
 
 module.exports.getOne = (req, res, next) => {
-  const { id } = req.params.id;
+  console.log(req.params)
+  const { id } = req.params;
   new Occupation()
     .readOne(id)
     .then(rel => {

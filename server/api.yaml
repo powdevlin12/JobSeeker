@@ -215,6 +215,13 @@ paths:
       tags:
         - Job
       summary: Get list Job
+      parameters:
+        - name: page
+          in: query
+          required: false
+          description: job page.
+          schema:
+            type : string
       responses:
         '200':
           description: 'Get Successfully.'
@@ -399,6 +406,13 @@ paths:
       tags:
         - Company
       summary: Get Company
+      parameters:
+        - name: page
+          in: query
+          required: false
+          description: Comapny page.
+          schema:
+            type : string
       responses:
         '200':
           description: 'Successfully.'
@@ -450,11 +464,11 @@ paths:
         - Company
       summary: Create Company
       requestBody:
-        description: Delete job
+        description: Create Company
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Delete'
+              $ref: '#/components/schemas/Company'
         required: true
       responses:
         '200':
@@ -469,7 +483,7 @@ paths:
         - Company
       summary: Update Company
       requestBody:
-        description: Delete job
+        description: Update Company
         content:
           application/json:
             schema:
@@ -538,6 +552,13 @@ paths:
       tags:
         - Application
       summary: Get Application
+      requestBody:
+        description: Application detail
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Delete'
+        required: true
       responses:
         '200':
           description: 'Successfully.'
@@ -618,7 +639,7 @@ paths:
       summary: Get Occupation
       parameters:
         - name: id
-          in: query
+          in: path
           required: true
           description: application id.
           schema:

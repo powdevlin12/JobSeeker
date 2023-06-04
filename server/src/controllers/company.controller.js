@@ -83,9 +83,9 @@ module.exports.updateOne = (req, res, next) => {
 }
 
 module.exports.delete = (req, res, next) => {
-  const { id } = req.body
-  new Company(id)
-    .delete(id)
+  const { _id } = req.body
+  new Company()
+    .delete(_id)
     .then((rel) => { res.status(200).json({ message: 'delete company success', success: true, relsult: rel }) })
     .catch(err => { res.status(500).json({ message: err.message, success: err.isSuccess }) })
 }
