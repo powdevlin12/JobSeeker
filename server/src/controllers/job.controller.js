@@ -148,6 +148,20 @@ module.exports.listJobByCompany = (req, res, next) => {
     res.status(500).json({ message: err.message, isSuccess: false })
   }
 }
+module.exports.listJobByCompanyAdmin = (req, res, next) => {
+  try {
+    var companyId = req.params.id
+    var companyName = req.query.name
+    new Job()
+      .listJobByCompanyAdmin(companyId, companyName)
+      .then((data) => { res.status(200).json({ message: "get success", data: data, isSuccess: true }) })
+      .catch((err) => { res.status(500).json({ message: err.message, isSuccess: false }) })
+
+  }
+  catch (err) {
+    res.status(500).json({ message: err.message, isSuccess: false })
+  }
+}
 //thong ke, bieu do
 module.exports.listJobByOccupatiton = (req, res, next) => {
   new Job().statisticalJobByOccupation(5)
