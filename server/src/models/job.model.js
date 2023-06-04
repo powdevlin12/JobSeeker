@@ -286,7 +286,7 @@ module.exports = class Job {
   listJobByCompany(companyId, companyName) {
     if (companyName == undefined) {
       return new Promise((resolve, reject) => {
-        jobSchema.find({ idCompany: companyId })
+        jobSchema.find({ status: true, deadline: { $gte: new Date }, idCompany: companyId })
           .populate('idCompany')
           .populate('idOccupation')
           .then((data) => resolve(data))
@@ -295,7 +295,7 @@ module.exports = class Job {
     }
     return new Promise(async (resolve, reject) => {
       try {
-        var listJob = await jobSchema.find({ idCompany: companyId })
+        var listJob = await jobSchema.find({ status: true, deadline: { $gte: new Date }, idCompany: companyId })
           .populate('idCompany')
           .populate('idOccupation');
         listJob = listJob.filter(job => chuanhoadaucau(job.name).toLowerCase().includes(chuanhoadaucau(companyName).toLowerCase()))
