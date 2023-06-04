@@ -23,6 +23,7 @@ module.exports = require('express').Router()
   .get("/list/all-moderator-job", verifyTokenIsAdmin, jobController.getAllJobModerator)
   .post("/list/search", jobController.getSearchJob)
   .get("/list/company/:id", jobController.listJobByCompany)
+  .get("/list/company/admin/:id", jobController.listJobByCompanyAdmin)
 
   .post("/upload/image", upload.Image.single('fileUpload'), jobController.uploadImage)
   .post("/test-post-api", (req, res) => {
